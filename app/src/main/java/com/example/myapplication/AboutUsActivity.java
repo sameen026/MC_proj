@@ -14,6 +14,7 @@ public class AboutUsActivity extends AppCompatActivity implements View.OnClickLi
         setContentView(R.layout.activity_about_us);
         init();
 
+
     }
 
     @Override
