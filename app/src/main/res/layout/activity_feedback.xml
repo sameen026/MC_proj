@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/feedback_rel_layout">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="@color/colorPrimary"
+        android:layout_marginTop="30dp">
+
+        <Button
+            android:id="@+id/back_btn"
+            android:layout_width="32dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/ic_keyboard_backspace_black_24dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/title_tv"
+            android:text= "Feedback"
+            android:textSize="20dp"
+            android:layout_marginLeft="50dp"
+            android:layout_centerVertical="true"
+            android:textColor="@color/colorWhite"
+            android:layout_marginTop="22dp"
+            android:textStyle="bold"/>
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/rate_me_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="How would you rate this plaza?"
+        android:textStyle="bold"
+        android:layout_marginLeft="@dimen/left"
+        android:layout_marginTop="110dp"
+        android:textSize="@dimen/left"
+        />
+
+    <RatingBar
+        android:id="@+id/ratingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="70dp"
+        android:layout_below="@id/rate_me_tv"
+        android:layout_marginLeft="@dimen/left"
+        android:layout_marginTop="@dimen/left"
+        android:numStars="5"
+        android:rating="5.0"
+        android:stepSize="0.5"
+        android:theme="@style/RatingBar" />
+    <TextView
+        android:id="@+id/result_rv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Your Review"
+
+        android:textStyle="bold"
+        android:layout_marginLeft="@dimen/left"
+        android:layout_below="@id/ratingBar"
+        android:textSize="@dimen/left"
+        />
+
+    <Button
+        android:id="@+id/btnSubmit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/review_et"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/top"
+        android:text="Submit"
+        android:textColor="@color/white"
+        android:background="@drawable/custom_button"/>
+
+        <TextView
+            android:id="@+id/txtRatingValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:layout_toRightOf="@id/ratingBar"
+            android:layout_below="@id/rate_me_tv"
+            android:layout_marginTop="40dp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/colorPrimary"
+            android:layout_marginLeft="30dp"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Tell people about your experience"
+        android:layout_below="@id/result_rv"
+        android:layout_marginLeft="@dimen/left"
+        android:layout_marginRight="@dimen/left"
+
+        android:id="@+id/review_et"/>
+
+</RelativeLayout>

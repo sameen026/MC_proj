@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="@color/colorPrimary"
+        android:layout_marginTop="30dp">
+
+        <Button
+            android:id="@+id/back_btn"
+            android:layout_width="32dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/ic_keyboard_backspace_black_24dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/title_tv"
+            android:text="Enter code"
+            android:textSize="20dp"
+            android:layout_marginLeft="50dp"
+            android:layout_centerVertical="true"
+            android:textColor="@color/colorWhite"
+            android:layout_marginTop="22dp"
+            android:textStyle="bold"/>
+    </RelativeLayout>
+
+    <com.broooapps.otpedittext2.OtpEditText
+        android:id="@+id/et1_main_activity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv1_main_activity"
+        android:clickable="false"
+        android:cursorVisible="false"
+        android:digits="0123456789"
+        android:inputType="number"
+        android:maxLength="4"
+        android:padding="8dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:textSize="20sp"
+
+        app:oev_primary_color="@color/colorPrimary"
+        app:oev_secondary_color="@color/colorPrimaryDark"/>
+    <TextView
+        android:id="@+id/tv1_main_activity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter Code"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/tv2_main_activity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Resend Code"
+        android:autoLink="web"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/et1_main_activity"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="30dp"
+        android:linksClickable="true"></TextView>
+
+</RelativeLayout>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/rel_layout"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/tv_range"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/left"
+        android:layout_marginTop="@dimen/forty"
+        android:layout_marginBottom="@dimen/left"
+        android:text="Enter Range"
+        android:textStyle="bold"
+        android:textSize="@dimen/left" />
+
+    <NumberPicker
+        android:id="@+id/np"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_range"
+        android:layout_marginLeft="@dimen/top" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_range"
+        android:layout_marginTop="@dimen/top"
+        android:layout_marginRight="@dimen/left"
+        android:layout_toRightOf="@id/np" />
+
+    <Button
+        android:id="@+id/range_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/np"
+        android:layout_marginTop="@dimen/left"
+        android:layout_toRightOf="@id/np"
+        android:background="@color/colorPrimary"
+        android:text="Next"
+        android:textColor="@color/white" />
+    </RelativeLayout>
