@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +14,11 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.myapplication.Plaza;
+import com.example.myapplication.PlazaAdapter;
+import com.example.myapplication.R;
+import com.example.myapplication.ViewSavedPlazaActivity;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,11 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.example.myapplication.AboutUsActivity;
+import com.example.myapplication.PrivacyPolicyActivity;
+import com.example.myapplication.R;
+import com.example.myapplication.ResetPasswordActivity;
 
 public class SettingFragment extends Fragment implements View.OnClickListener {
     @Nullable
@@ -41,7 +46,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
         }
         else if(view.getId()==R.id.change_pass_tv)
         {
-            Intent i=new Intent(getActivity(),ResetPasswordActivity.class);
+            Intent i=new Intent(getActivity(), ResetPasswordActivity.class);
             startActivity(i);
         }
     }

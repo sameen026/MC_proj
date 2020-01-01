@@ -15,8 +15,6 @@
     <string name="menu_send">Send</string>
 
 
-
-
     <string name="menu_home">Park @ Ease</string>
     <string name="menu_item_home">Home</string>
     <string name="menu_find_plaza">Find Plaza</string>
@@ -33,8 +31,6 @@
     <string name="have_account_str">Already have an account?<font color='#25cfad'> Signin</font></string>
     <string name="not_have_account_str">Not have an account?<font color='#25cfad'> Signup Now</font></string>
     <string name="title_activity_maps">Map</string>
-
-
 
 
     <string name="AboutUs">

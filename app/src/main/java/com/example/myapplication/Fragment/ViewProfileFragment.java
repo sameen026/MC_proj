@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.Fragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +12,10 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
+import com.example.myapplication.PopupEmailActivity;
+import com.example.myapplication.PopupNameActivity;
+import com.example.myapplication.R;
 
 public class ViewProfileFragment extends Fragment implements View.OnClickListener {
     Button img1;
