@@ -26,7 +26,7 @@ public class DBTest extends AppCompatActivity implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         String id=myDB.push().getKey();
-        User usr=new User(id,"abc@gmail.com","sameen","abc","membership");
+        User usr=new User(id,"abc@gmail.com","sameen javed","abc","membership");
         //jkkjhk
         myDB.child(id).setValue(usr);
     }

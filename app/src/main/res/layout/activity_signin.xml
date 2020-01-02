@@ -74,6 +74,14 @@
             android:layout_below="@+id/pwd"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="70dp"/>
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/sign_in_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/signin_btn"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="10dp"/>
+
         <TextView
             android:id="@+id/or_text"
             android:layout_width="wrap_content"
@@ -82,7 +90,7 @@
             android:clickable="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20sp"
-            android:layout_below="@+id/signin_btn"/>
+            android:layout_below="@+id/sign_in_button"/>
 
 
     </RelativeLayout>

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +18,10 @@ import com.example.myapplication.Fragment.HomeFragment;
 import com.example.myapplication.Fragment.SavedPlazaFragment;
 import com.example.myapplication.Fragment.SettingFragment;
 import com.example.myapplication.Fragment.ViewProfileFragment;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -24,6 +29,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 
@@ -38,6 +45,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     Fragment fragment=null;
     private List<String> lastSearches;
     private Button delete;
+    GoogleSignInClient mGoogleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +67,23 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         searchBar.setOnSearchActionListener(this);
         searchBar.setCardViewElevation(10);
         searchBar.setPlaceHolder("search here");
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        if (acct != null) {
+
+
+            /////Not null means that account was successfully signed in and here are the further steps
+//            user.setPersonName(acct.getDisplayName());
+//            user.setPersonGivenName(acct.getGivenName());
+//            user.setPersonFamilyName(acct.getFamilyName());
+//            user.setPersonEmail(acct.getEmail());
+//            user.setPersonId(acct.getId());
+//            user.setPersonPhoto(acct.getPhotoUrl());
+            Toast.makeText(getApplicationContext(),"Your name is: "+acct.getDisplayName()+" and email is: "+acct.getEmail(),Toast.LENGTH_LONG);
+        }
     }
     @Override
     protected void onDestroy() {
@@ -91,8 +116,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                         new SettingFragment()).add(new HomeFragment(),"HomeFragment").addToBackStack("HomeFragment").commit();
                 break;
             case R.id.nav_logout:
-                Intent i=new Intent(getApplicationContext(),firstStartActivity.class);
-                startActivity(i);
+                signOut();
                 break;
             case R.id.nav_savedPlazas:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
@@ -146,6 +170,19 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pucit,10F));
 
 
+    }
+
+    private void signOut() {
+        mGoogleSignInClient.signOut().addOnCompleteListener(this, new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                // ...
+                Toast.makeText(getApplicationContext(),"Signout Successfully",Toast.LENGTH_LONG);
+                Intent i=new Intent(getApplicationContext(),firstStartActivity.class);
+                startActivity(i);
+
+            }
+        });
     }
 
 }
