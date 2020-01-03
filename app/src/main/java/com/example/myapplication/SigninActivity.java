@@ -7,33 +7,44 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import com.example.myapplication.Model.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class SigninActivity extends AppCompatActivity {
-    EditText userName;
-    EditText password;
+    TextInputLayout email;
+    TextInputLayout password;
     GoogleSignInClient mGoogleSignInClient;
     int RC_SIGN_IN = 0;
+    DatabaseReference myDB;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signin);
-        userName=findViewById(R.id.user_name);
+        email=findViewById(R.id.user_name);
         password=findViewById(R.id.pwd);
+
+        myDB = FirebaseDatabase.getInstance().getReference("user");
         //This is my code/////////////////////////////////////////////////////////////////////////
         com.google.android.gms.common.SignInButton googleSignIn = findViewById(R.id.sign_in_button);
         googleSignIn.setOnClickListener(new  View.OnClickListener(){
@@ -66,10 +77,40 @@ public class SigninActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 //                Toast.makeText(getApplicationContext(),"Signin Button Clicked",Toast.LENGTH_SHORT).show();
-                if(userName.getText().toString().equals("abc@gmail.com")&& password.getText().toString().equals("abc"))
+                if(validateEmail() & validatePassword())
                 {
-                    Intent i = new Intent(getApplicationContext(), MainScreenActivity.class);
-                    startActivity(i);
+                    Query query = FirebaseDatabase.getInstance().getReference("user").orderByChild("email").equalTo(email.getEditText().getText().toString());
+                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists()){
+                                //Do something to verify password
+                                boolean isFound = false;
+                                for(DataSnapshot data: dataSnapshot.getChildren()){
+                                    User user = data.getValue(User.class);
+                                    if(user.getEmail().equals("aleemahmada107@gmail.com")){
+                                        isFound = true;
+                                    }
+                                }
+                                if(isFound) {
+                                    Toast.makeText(getApplicationContext(), "Email found", Toast.LENGTH_LONG).show();
+                                }else
+                                {
+                                    Toast.makeText(getApplicationContext(), "Email not found", Toast.LENGTH_LONG).show();
+                                }
+
+                            }else{
+                                Toast.makeText(getApplicationContext(),"Email not found in DB",Toast.LENGTH_LONG).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+//                    Intent i = new Intent(getApplicationContext(), MainScreenActivity.class);
+//                    startActivity(i);
                 }
                 else
                 {
@@ -167,5 +208,37 @@ public class SigninActivity extends AppCompatActivity {
                 .create();
 
         return myQuittingDialogBox;
+    }
+    private boolean validateEmail(){
+        String text = email.getEditText().getText().toString().trim();
+        if(text.isEmpty()){
+            email.setError("Email can't be empty");
+            return false;
+        }else if(!isValidEmail(text)) {
+            email.setError("Invalid email address");
+            return false;
+        }else{
+            //Need to validate email here
+            email.setError(null);
+            return true;
+        }
+    }
+    private boolean validatePassword() {
+        String pass = password.getEditText().getText().toString().trim();
+        if (pass.isEmpty()) {
+            password.setError("Password can't be empty");
+            return false;
+        } else if (pass.length() > 25) {
+            password.setError("Password can't exceed 25 characters.");
+            return false;
+        } else {
+            //Need to validate the password here
+            password.setError(null);
+            return true;
+        }
+    }
+    private boolean isValidEmail(String email) {
+        String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+        return email.matches(regex);
     }
 }

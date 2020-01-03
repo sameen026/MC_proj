@@ -9,20 +9,31 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DBTest"></activity>
-        <activity android:name=".SigninActivity" />
+        <activity android:name=".DBTest">
+
+        </activity>
+        <activity android:name=".SigninActivity" >
+
+
+        </activity>
         <activity android:name=".MainScreenActivity" />
-        <activity android:name=".SignupActivity" />
-        <activity
-            android:name=".SplashActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".SignupActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            </activity>
+        <activity
+            android:name=".SplashActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+
+
+
         </activity>
-        <activity android:name=".firstStartActivity" />
+        <activity android:name=".firstStartActivity">
+
+        </activity>
         <activity android:name=".EnterCodeActivity" />
         <activity android:name=".ChangePasswordActivity" />
         <activity
@@ -44,7 +55,7 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyC_kDLDCjA7CMWcnxUChqpYi3YIhGvc4D0" />
+            android:value="AIzaSyCcTwVKVTDQp8EY1E3Ort_5hGhkpJgGefw" />
     </application>
 
     <uses-feature

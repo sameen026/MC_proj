@@ -122,17 +122,14 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="30sp"/>
 
-        <Button
-            android:id="@+id/google_signup_btn"
+        <TextView
+            android:id="@+id/google_signup_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:width="@dimen/btn_width"
-            android:background="@drawable/roundedbutton"
-            android:text="Sign Up with Google"
-            android:textColor="@color/white"
-            android:layout_below="@+id/signup_btn"
+            android:text="@string/signUp_with_G"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="5sp"/>
+            android:layout_marginTop="10sp"
+            android:layout_below="@+id/signup_btn"/>
 
         <TextView
             android:id="@+id/or_text"
@@ -141,7 +138,7 @@
             android:text="@string/have_account_str"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10sp"
-            android:layout_below="@+id/google_signup_btn"/>
+            android:layout_below="@+id/google_signup_text"/>
 
 <!--        <Button-->
 <!--            android:id="@+id/signin_btn"-->
