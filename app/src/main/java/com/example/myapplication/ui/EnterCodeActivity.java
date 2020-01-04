@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.broooapps.otpedittext2.OnCompleteListener;
+import com.example.myapplication.R;
 
 public class EnterCodeActivity extends Activity implements OnCompleteListener,View.OnClickListener {
     com.broooapps.otpedittext2.OtpEditText et;

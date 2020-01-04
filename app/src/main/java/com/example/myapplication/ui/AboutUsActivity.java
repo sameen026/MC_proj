@@ -1,10 +1,12 @@
-package com.example.myapplication;
+package com.example.myapplication.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+
+import com.example.myapplication.R;
 
 public class AboutUsActivity extends AppCompatActivity implements View.OnClickListener {
     public Button backBtn;

@@ -24,13 +24,11 @@
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="-153dp"
         android:fitsSystemWindows="true">
-
         <fragment
-            android:id="@+id/map"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
         <com.mancj.materialsearchbar.MaterialSearchBar
             style="@style/MaterialSearchBarLight"
             app:mt_hint="Search Here"
@@ -47,10 +45,10 @@
             android:layout_alignParentBottom="true"
             android:weightSum="20">
 <!--            <Button-->
+<!--                android:id="@+id/explore"-->
 <!--                android:layout_width="0dp"-->
 <!--                android:layout_height="match_parent"-->
 <!--                android:layout_alignParentBottom="true"-->
-
 <!--                android:layout_weight="10"-->
 <!--                android:text="Explore"-->
 <!--                android:background="@color/colorPrimary"-->

@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.ui;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -18,27 +19,25 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class ViewPlazaDetailsActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener {
+public class ViewSavedPlazaActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener {
     public GoogleMap googleMap;
     public MapFragment mapFragment;
     public Button shareBtn;
-    public  Button saveBtn;
-    public  Button feedbackBtn;
+    public  Button deleteBtn;
     public TextView name;
     public TextView area;
     public TextView chargesCar;
     public TextView chargesBike;
-    public TextView slotCar;
-    public TextView slotBike;
     public  Button backBtn;
+    public  Button feedbackBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_view_plaza_details);
+        setContentView(R.layout.activity_view_saved_plaza);
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         shareBtn=findViewById(R.id.share_btn);
-        saveBtn=findViewById(R.id.save_btn);
+        deleteBtn=findViewById(R.id.delete_btn);
         feedbackBtn=findViewById(R.id.give_feedback_btn);
 
         name=findViewById(R.id.plaza_name_tv);
@@ -49,40 +48,36 @@ public class ViewPlazaDetailsActivity extends AppCompatActivity implements OnMap
         chargesCar.setText("20 Rs per hour for car");
         chargesBike=findViewById(R.id.plaza_charges_bike_tv);
         chargesBike.setText("10 Rs per hour for bike");
-        slotCar=findViewById(R.id.slot_car_tv);
-        slotCar.setText("10 slots available for cars");
-        slotBike=findViewById(R.id.slot_bike_tv);
-        slotBike.setText("8 slots available for bikes");
         backBtn=findViewById(R.id.back_btn);
         shareBtn.setOnClickListener(this);
-        saveBtn.setOnClickListener(this);
-        backBtn.setOnClickListener(this);
+        deleteBtn.setOnClickListener(this);
+       backBtn.setOnClickListener(this);
         feedbackBtn.setOnClickListener(this);
 
     }
 
     @Override
     public void onMapReady(GoogleMap gMap) {
-        googleMap = gMap;
-        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        try {
-            googleMap.setMyLocationEnabled(true);
-        } catch (SecurityException se) {
+            googleMap = gMap;
+            googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+            try {
+                googleMap.setMyLocationEnabled(true);
+            } catch (SecurityException se) {
 
-        }
+            }
 
-        //Edit the following as per you needs
-        googleMap.setTrafficEnabled(true);
-        googleMap.setIndoorEnabled(true);
-        googleMap.setBuildingsEnabled(true);
-        googleMap.getUiSettings().setZoomControlsEnabled(true);
-        //
+            //Edit the following as per you needs
+            googleMap.setTrafficEnabled(true);
+            googleMap.setIndoorEnabled(true);
+            googleMap.setBuildingsEnabled(true);
+            googleMap.getUiSettings().setZoomControlsEnabled(true);
+            //
 
-        LatLng placeLocation = new LatLng(31.570611, 74.310223); //Make them global
-        Marker placeMarker = googleMap.addMarker(new MarkerOptions().position(placeLocation)
-                .title("PUCIT"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(placeLocation));
-        googleMap.animateCamera(CameraUpdateFactory.zoomTo(10), 1000, null);
+            LatLng placeLocation = new LatLng(31.570611, 74.310223); //Make them global
+            Marker placeMarker = googleMap.addMarker(new MarkerOptions().position(placeLocation)
+                    .title("PUCIT"));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(placeLocation));
+            googleMap.animateCamera(CameraUpdateFactory.zoomTo(10), 1000, null);
 
     }
 
@@ -96,12 +91,12 @@ public class ViewPlazaDetailsActivity extends AppCompatActivity implements OnMap
             Intent.createChooser(sendIntent, "Share via");
             startActivity(sendIntent);
         }
-        else if(view.getId()==R.id.save_btn) {
+       else if(view.getId()==R.id.delete_btn) {
             AlertDialog diaBox = AskOption();
             diaBox.show();
         }
         else if(view.getId()==R.id.back_btn) {
-            this.onBackPressed();
+           this.onBackPressed();
         }
         else if(view.getId()==R.id.give_feedback_btn) {
             Intent i=new Intent(this,FeedbackActivity.class);
@@ -113,11 +108,11 @@ public class ViewPlazaDetailsActivity extends AppCompatActivity implements OnMap
     {
         AlertDialog myQuittingDialogBox = new AlertDialog.Builder(this)
                 // set message, title, and icon
-                .setTitle("Save")
-                .setMessage("Do you want to save")
-                .setIcon(R.drawable.ic_bookmark_black)
+                .setTitle("Delete")
+                .setMessage("Do you want to Delete")
+                .setIcon(R.drawable.ic_delete_black)
 
-                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //your deleting code
@@ -136,5 +131,4 @@ public class ViewPlazaDetailsActivity extends AppCompatActivity implements OnMap
 
         return myQuittingDialogBox;
     }
-
 }

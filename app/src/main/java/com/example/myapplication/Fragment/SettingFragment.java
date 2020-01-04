@@ -10,10 +10,10 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.myapplication.AboutUsActivity;
-import com.example.myapplication.PrivacyPolicyActivity;
+import com.example.myapplication.ui.AboutUsActivity;
+import com.example.myapplication.ui.PrivacyPolicyActivity;
 import com.example.myapplication.R;
-import com.example.myapplication.ResetPasswordActivity;
+import com.example.myapplication.ui.ResetPasswordActivity;
 
 public class SettingFragment extends Fragment implements View.OnClickListener {
     @Nullable

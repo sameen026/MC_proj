@@ -1,8 +1,10 @@
-package com.example.myapplication;
+package com.example.myapplication.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+
+import com.example.myapplication.R;
 
 public class PopupEmailActivity extends Activity {
     @Override

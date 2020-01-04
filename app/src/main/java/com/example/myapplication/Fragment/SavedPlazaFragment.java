@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.Plaza;
 import com.example.myapplication.PlazaAdapter;
 import com.example.myapplication.R;
-import com.example.myapplication.ViewSavedPlazaActivity;
+import com.example.myapplication.ui.ViewSavedPlazaActivity;
 
 import java.util.ArrayList;
 import java.util.List;

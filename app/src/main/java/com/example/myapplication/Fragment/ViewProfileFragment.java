@@ -1,20 +1,18 @@
 package com.example.myapplication.Fragment;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.myapplication.PopupEmailActivity;
-import com.example.myapplication.PopupNameActivity;
+import com.example.myapplication.ui.PopupEmailActivity;
+import com.example.myapplication.ui.PopupNameActivity;
 import com.example.myapplication.R;
 
 public class ViewProfileFragment extends Fragment implements View.OnClickListener {

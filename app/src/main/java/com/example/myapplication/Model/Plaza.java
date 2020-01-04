@@ -1,10 +1,13 @@
 package com.example.myapplication.Model;
 
 public class Plaza {
-    String plazaId;
     String plazaName;
     int totalSlots;
     int availableSlots;
+
+    public Plaza() {
+    }
+
     double carFee;
     double bikeFee;
     String carPolicyType;
@@ -22,16 +25,7 @@ public class Plaza {
         this.userId = userId;
     }
 
-    public String getPlazaId() {
-        return plazaId;
-    }
-
-    public void setPlazaId(String plazaId) {
-        this.plazaId = plazaId;
-    }
-
-    public Plaza(String plazaId, String plazaName, int totalSlots, int availableSlots, double carFee, double bikeFee, String carPolicyType, String bikePolicyType, String status, double plazaLatitude, double plazaLongitude, String userId) {
-        this.plazaId = plazaId;
+    public Plaza( String plazaName, int totalSlots, int availableSlots, double carFee, double bikeFee, String carPolicyType, String bikePolicyType, String status, double plazaLatitude, double plazaLongitude, String userId) {
         this.plazaName = plazaName;
         this.totalSlots = totalSlots;
         this.availableSlots = availableSlots;
@@ -45,13 +39,6 @@ public class Plaza {
         this.userId = userId;
     }
 
-    public String getId() {
-        return plazaId;
-    }
-
-    public void setId(String id) {
-        this.plazaId = id;
-    }
 
     public String getPlazaName() {
         return plazaName;

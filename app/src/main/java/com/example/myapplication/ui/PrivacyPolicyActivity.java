@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
+
+import com.example.myapplication.R;
 
 public class PrivacyPolicyActivity extends AppCompatActivity implements View.OnClickListener {
     WebView web;
