@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.myapplication.Model.User;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -14,6 +15,7 @@ public class DBTest extends AppCompatActivity implements View.OnClickListener {
 
     Button btn;
     DatabaseReference myDB;
+    FirebaseAuth fAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,12 +23,14 @@ public class DBTest extends AppCompatActivity implements View.OnClickListener {
         btn =findViewById(R.id.click);
         btn.setOnClickListener(this);
         myDB= FirebaseDatabase.getInstance().getReference("user");
+
     }
 
     @Override
     public void onClick(View view) {
         String id=myDB.push().getKey();
-        User usr=new User(id,"abc@gmail.com","sameen","abc","membership");
+        User usr=new User(id,"abc@gmail.com","sameen javed","abc","membership");
+        //jkkjhk
         myDB.child(id).setValue(usr);
     }
 }
