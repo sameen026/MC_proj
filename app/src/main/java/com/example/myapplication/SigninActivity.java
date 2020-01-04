@@ -24,6 +24,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
+
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,11 +40,14 @@ public class SigninActivity extends AppCompatActivity {
     int RC_SIGN_IN = 0;
     DatabaseReference myDB;
 
+    //FirebaseAuth fAuth;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signin);
         email=findViewById(R.id.user_name);
         password=findViewById(R.id.pwd);
+        //fAuth = FirebaseAuth.getInstance();
 
         myDB = FirebaseDatabase.getInstance().getReference("user");
         //This is my code/////////////////////////////////////////////////////////////////////////

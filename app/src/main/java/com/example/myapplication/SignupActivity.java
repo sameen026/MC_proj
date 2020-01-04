@@ -22,6 +22,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 //import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -32,7 +33,7 @@ public class SignupActivity extends AppCompatActivity {
     TextView googleSignUpText, textSignUp;
     DatabaseReference myDB;
     GoogleSignInClient mGoogleSignInClient;
-//    FirebaseAuth fAuth;
+    FirebaseAuth fAuth;
     int RC_SIGN_IN = 0;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +47,7 @@ public class SignupActivity extends AppCompatActivity {
         googleSignUpText = (TextView) findViewById(R.id.google_signup_text);
         textSignUp = (TextView) findViewById(R.id.or_text);
         myDB= FirebaseDatabase.getInstance().getReference("user");
-//        fAuth = FirebaseAuth.getInstance();
+       fAuth = FirebaseAuth.getInstance();
 
         //For google Signin//////////////////
 
