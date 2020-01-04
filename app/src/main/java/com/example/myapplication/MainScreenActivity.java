@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 
 import java.util.List;
@@ -52,6 +53,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_screen);
         sMApFragment= SupportMapFragment.newInstance();
+
 
         drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -173,16 +175,19 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     }
 
     private void signOut() {
+        FirebaseAuth.getInstance().signOut();
+
         mGoogleSignInClient.signOut().addOnCompleteListener(this, new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 // ...
                 Toast.makeText(getApplicationContext(),"Signout Successfully",Toast.LENGTH_LONG);
-                Intent i=new Intent(getApplicationContext(),firstStartActivity.class);
-                startActivity(i);
+
+                startActivity(new Intent(getApplicationContext(),SigninActivity.class));
 
             }
         });
+        finish();
     }
 
 }

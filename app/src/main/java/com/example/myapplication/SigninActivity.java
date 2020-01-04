@@ -22,10 +22,16 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 
 
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,20 +40,23 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 public class SigninActivity extends AppCompatActivity {
-    TextInputLayout email;
-    TextInputLayout password;
+    private static final String TAG = "Errir";
+    TextInputLayout email, password;
+    String emailString, passwordString;
     GoogleSignInClient mGoogleSignInClient;
     int RC_SIGN_IN = 0;
     DatabaseReference myDB;
 
-    //FirebaseAuth fAuth;
+    FirebaseAuth fAuth, mAuth;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signin);
         email=findViewById(R.id.user_name);
         password=findViewById(R.id.pwd);
-        //fAuth = FirebaseAuth.getInstance();
+        fAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
+
 
         myDB = FirebaseDatabase.getInstance().getReference("user");
         //This is my code/////////////////////////////////////////////////////////////////////////
@@ -84,45 +93,55 @@ public class SigninActivity extends AppCompatActivity {
 //                Toast.makeText(getApplicationContext(),"Signin Button Clicked",Toast.LENGTH_SHORT).show();
                 if(validateEmail() & validatePassword())
                 {
-                    Query query = FirebaseDatabase.getInstance().getReference("user").orderByChild("email").equalTo(email.getEditText().getText().toString());
-                    query.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if(dataSnapshot.exists()){
-                                //Do something to verify password
-                                boolean isFound = false;
-                                for(DataSnapshot data: dataSnapshot.getChildren()){
-                                    User user = data.getValue(User.class);
-                                    if(user.getEmail().equals("aleemahmada107@gmail.com")){
-                                        isFound = true;
-                                    }
-                                }
-                                if(isFound) {
-                                    Toast.makeText(getApplicationContext(), "Email found", Toast.LENGTH_LONG).show();
-                                }else
-                                {
-                                    Toast.makeText(getApplicationContext(), "Email not found", Toast.LENGTH_LONG).show();
-                                }
-
-                            }else{
-                                Toast.makeText(getApplicationContext(),"Email not found in DB",Toast.LENGTH_LONG).show();
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
+//                    Query query = FirebaseDatabase.getInstance().getReference("user").orderByChild("email").equalTo(email.getEditText().getText().toString());
+//                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                            if(dataSnapshot.exists()){
+//                                //Do something to verify password
+//                                boolean isFound = false;
+//                                for(DataSnapshot data: dataSnapshot.getChildren()){
+//                                    User user = data.getValue(User.class);
+//                                    if(user.getEmail().equals("aleemahmada107@gmail.com")){
+//                                        isFound = true;
+//                                    }
+//                                }
+//                                if(isFound) {
+//                                    Toast.makeText(getApplicationContext(), "Email found", Toast.LENGTH_LONG).show();
+//                                }else
+//                                {
+//                                    Toast.makeText(getApplicationContext(), "Email not found", Toast.LENGTH_LONG).show();
+//                                }
+//
+//                            }else{
+//                                Toast.makeText(getApplicationContext(),"Email not found in DB",Toast.LENGTH_LONG).show();
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                        }
+//                    });
 //                    Intent i = new Intent(getApplicationContext(), MainScreenActivity.class);
 //                    startActivity(i);
+                    emailString = email.getEditText().getText().toString();
+                    passwordString = password.getEditText().getText().toString();
+                    fAuth.signInWithEmailAndPassword(emailString, passwordString).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if(task.isSuccessful()){
+                                //Directing to Dashbaord Screen page to Login to app
+                                startActivity(new Intent(getApplicationContext(), MainScreenActivity.class));
+                                //email.setError(null);
+                                finish();
+                            }else{
+                                //If the user is not already registered to db.
+                                email.setError("Email not registered");
+                            }
+                        }
+                    });
                 }
-                else
-                {
-                    AlertDialog diaBox = AskOption();
-                    diaBox.show();
-                }
-
             }
         });
 
@@ -136,22 +155,25 @@ public class SigninActivity extends AppCompatActivity {
             }
         });
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
     protected void onStart() {
         super.onStart();
-        // Check for existing Google Sign In account, if the user is already signed in the GoogleSignInAccount will be non-null.
-        if(GoogleSignIn.getLastSignedInAccount(this)!= null){
-            GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-            //The user is already signed in. Update UI accordingly
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = fAuth.getCurrentUser();
+        if(currentUser != null){
             Intent i = new Intent(getApplicationContext(), MainScreenActivity.class);
             startActivity(i);
+        }
 
 //            Toast.makeText(getApplicationContext(),"User has already signed in to the app.",Toast.LENGTH_SHORT);
-        }
+
     }
 
 
@@ -160,17 +182,62 @@ public class SigninActivity extends AppCompatActivity {
         startActivityForResult(signInIntent,RC_SIGN_IN);
     }
 
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//
+//        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+//        if (requestCode == RC_SIGN_IN) {
+//            // The Task returned from this call is always completed, no need to attach
+//            // a listener.
+//            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+//            handleSignInResult(task);
+//        }
+//    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
-            // The Task returned from this call is always completed, no need to attach
-            // a listener.
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            handleSignInResult(task);
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                firebaseAuthWithGoogle(account);
+            } catch (ApiException e) {
+                // Google Sign In failed, update UI appropriately
+                Log.w(TAG, "Google sign in failed", e);
+                // ...
+            }
         }
+    }
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        fAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            //Log.d(TAG, "signInWithCredential:success");
+                            FirebaseUser user = fAuth.getCurrentUser();
+                            startActivity(new Intent(getApplicationContext(), MainScreenActivity.class));
+                            //updateUI(user);
+                        } else {
+                            Toast.makeText(getApplicationContext(),"Sign in failed",Toast.LENGTH_SHORT).show();
+                            // If sign in fails, display a message to the user.
+                            //Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            //Snackbar.make(findViewById(R.id.main_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+                            //updateUI(null);
+                        }
+
+                        // ...
+                    }
+                });
     }
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
@@ -187,8 +254,7 @@ public class SigninActivity extends AppCompatActivity {
             //updateUI(null);
         }
     }
-    private AlertDialog AskOption()
-    {
+    private AlertDialog AskOption() {
         AlertDialog myQuittingDialogBox = new AlertDialog.Builder(this)
                 // set message, title, and icon
                 .setTitle("Error")
