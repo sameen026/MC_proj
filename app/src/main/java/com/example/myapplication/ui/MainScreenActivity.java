@@ -2,7 +2,6 @@ package com.example.myapplication.ui;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,19 +9,13 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -34,7 +27,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.myapplication.Fragment.HomeFragment;
@@ -43,23 +35,21 @@ import com.example.myapplication.Fragment.SettingFragment;
 import com.example.myapplication.Fragment.ViewProfileFragment;
 import com.example.myapplication.Model.Plaza;
 import com.example.myapplication.R;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -69,18 +59,18 @@ import com.mancj.materialsearchbar.MaterialSearchBar;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
 import java.util.List;
 
 import static com.example.myapplication.util.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
 
 
-public class MainScreenActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MaterialSearchBar.OnSearchActionListener, OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+public class MainScreenActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MaterialSearchBar.OnSearchActionListener, OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
     private static final String TAG = "MapActivity";
     private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
+
 
     //widgets
     private DrawerLayout drawer;
@@ -93,6 +83,10 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     private FusedLocationProviderClient mFusedLocationProviderClient;
     DatabaseReference firebaseDatabase;
     Marker marker;
+    Location currentLocation;
+    Address address;
+    private Polyline currentPolyline;
+    Marker marker1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -102,12 +96,37 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
         searchBar = findViewById(R.id.searchBar);
         firebaseDatabase=FirebaseDatabase.getInstance().getReference().child("plaza");
-       firebaseDatabase.push().setValue(marker);
-
+        Plaza p=new Plaza("aik or plaza",500,200,40,20,"daily","daily","non-registered",31.541335, 74.302519,"sameen");
+        firebaseDatabase.push().setValue(marker1);
         getLocationPermission();
+//        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+
+//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
+//                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+//        drawer.addDrawerListener(toggle);
+//        toggle.syncState();
+//        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+//                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+//         AutocompleteFilter filter = new AutocompleteFilter.Builder()
+//                .setCountry("IN")
+//                .setTypeFilter(AutocompleteFilter.TYPE_FILTER_CITIES)
+//                .build();
+//        autocompleteFragment.setFilter(filter);
+//        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+//            @Override
+//            public void onPlaceSelected(com.google.android.libraries.places.compat.Place place) {
+//
+//            }
+//
+//            @Override
+//            public void onError(Status status) {
+//                status.toString();
+//            }
+//        });
+
     }
 
     @Override
@@ -139,9 +158,20 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot s:dataSnapshot.getChildren())
                 {
+
                     Plaza p=s.getValue(Plaza.class);
                     LatLng location=new LatLng(p.getPlazaLatitude(),p.getPlazaLongitude());
-                    mMap.addMarker(new MarkerOptions().position(location).title(p.getPlazaName()));
+                    MarkerOptions options=new MarkerOptions().position(location).title(p.getPlazaName());
+                    if(p.getStatus().equals("non-registered"))
+                    {
+
+                        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                    }
+                    else
+                    {
+                        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                    }
+                    mMap.addMarker(options);
                 }
             }
 
@@ -174,7 +204,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         }
 
         if(list.size() > 0){
-            Address address = list.get(0);
+            address = list.get(0);
 
             Log.d(TAG, "geoLocate: found a location: " + address.toString());
             //Toast.makeText(this, address.toString(), Toast.LENGTH_SHORT).show();
@@ -198,7 +228,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                     public void onComplete(@NonNull Task task) {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "onComplete: found location!");
-                            Location currentLocation = (Location) task.getResult();
+                            currentLocation = (Location) task.getResult();
 
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                     DEFAULT_ZOOM,
@@ -224,7 +254,9 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
             MarkerOptions options = new MarkerOptions()
                     .position(latLng)
                     .title(title);
-            mMap.addMarker(options);
+            if(marker!=null)
+                marker.remove();
+            marker=mMap.addMarker(options);
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
@@ -240,7 +272,9 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         Log.d(TAG, "initMap: initializing map");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 
+
         mapFragment.getMapAsync(MainScreenActivity.this);
+
 
         mapView = mapFragment.getView();
         if (mapView != null &&
@@ -340,7 +374,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
 //        }
 //        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 //    }
-public static void hideSoftKeyboard(Context context, View view) {
+    public static void hideSoftKeyboard(Context context, View view) {
     InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 }
@@ -393,7 +427,7 @@ public static void hideSoftKeyboard(Context context, View view) {
     }
 
     @Override
-    public void onSearchConfirmed(CharSequence text) {
+    public void onSearchConfirmed(CharSequence text){
         hideSoftKeyboard(this,mapView);
         geoLocate();
 
@@ -413,8 +447,12 @@ public static void hideSoftKeyboard(Context context, View view) {
     }
     @Override
     public boolean onMarkerClick(Marker marker) {
+        marker.showInfoWindow();
         return false;
+
     }
+
+
 }
 
 

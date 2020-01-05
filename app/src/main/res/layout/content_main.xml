@@ -29,21 +29,46 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+<!--        <androidx.appcompat.widget.Toolbar-->
+<!--            android:id="@+id/toolbar"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="?attr/actionBarSize"-->
+<!--            android:background="@color/colorPrimary"-->
+<!--            android:elevation="4dp"-->
+<!--            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"-->
+<!--            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />-->
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_margin="15dp"-->
+<!--            android:background="@android:color/white"-->
+<!--            android:orientation="vertical"-->
+<!--            android:layout_marginTop="70dp">-->
+
+<!--        <fragment-->
+<!--            android:id="@+id/place_autocomplete_fragment"-->
+<!--            android:name="com.google.android.libraries.places.compat.ui.PlaceAutocompleteFragment"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content" />-->
+<!--        </LinearLayout>-->
+
+
         <com.mancj.materialsearchbar.MaterialSearchBar
             style="@style/MaterialSearchBarLight"
             app:mt_hint="Search Here"
             app:mt_maxSuggestionsCount="10"
             app:mt_navIconEnabled="true"
             app:mt_roundedSearchBarEnabled="true"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/searchBar" />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="110dp"
-            android:layout_alignParentBottom="true"
-            android:weightSum="20">
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="110dp"-->
+<!--            android:layout_alignParentBottom="true"-->
+<!--            android:weightSum="20">-->
 <!--            <Button-->
 <!--                android:id="@+id/explore"-->
 <!--                android:layout_width="0dp"-->
@@ -62,7 +87,7 @@
 <!--                android:background="@color/colorPrimary"-->
 <!--                android:textColor="@color/white"></Button>-->
 
-        </LinearLayout>
+
 
 
     </RelativeLayout>
