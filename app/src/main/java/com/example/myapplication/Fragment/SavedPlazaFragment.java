@@ -118,7 +118,7 @@ public class SavedPlazaFragment extends Fragment implements PlazaAdapter.MyViewH
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.back_btn) {
-           // super.onBackPressed();
+           getActivity().onBackPressed();
         }
     }
 

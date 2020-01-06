@@ -85,7 +85,6 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     Marker marker;
     Location currentLocation;
     Address address;
-    private Polyline currentPolyline;
     Marker marker1;
 
     @Override
@@ -130,6 +129,22 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult: called.");
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ENABLE_GPS: {
+                if(mLocationPermissionsGranted){
+                    initMap();
+                }
+                else{
+                    getLocationPermission();
+                }
+            }
+        }
+
+    }
+    @Override
     public void onMapReady(GoogleMap googleMap) {
         Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onMapReady: map is ready");
@@ -158,11 +173,10 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot s:dataSnapshot.getChildren())
                 {
-
                     Plaza p=s.getValue(Plaza.class);
                     LatLng location=new LatLng(p.getPlazaLatitude(),p.getPlazaLongitude());
                     MarkerOptions options=new MarkerOptions().position(location).title(p.getPlazaName());
-                    if(p.getStatus().equals("non-registered"))
+                    if(p.getStatus().equals("unRegistered"))
                     {
 
                         options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
@@ -174,13 +188,9 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                     mMap.addMarker(options);
                 }
             }
-
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
-            init();
+        init();
         }
     }
     private void init() {
@@ -216,12 +226,9 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
 
     private void getDeviceLocation() {
         Log.d(TAG, "getDeviceLocation: getting the devices current location");
-
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
         try {
             if (mLocationPermissionsGranted) {
-
                 final Task location = mFusedLocationProviderClient.getLastLocation();
                 location.addOnCompleteListener(new OnCompleteListener() {
                     @Override
@@ -229,11 +236,9 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                         if (task.isSuccessful()) {
                             Log.d(TAG, "onComplete: found location!");
                             currentLocation = (Location) task.getResult();
-
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                     DEFAULT_ZOOM,
                                     "My Location");
-
                         } else {
                             Log.d(TAG, "onComplete: current location is null");
                             Toast.makeText(MainScreenActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
@@ -271,11 +276,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     private void initMap() {
         Log.d(TAG, "initMap: initializing map");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-
-
         mapFragment.getMapAsync(MainScreenActivity.this);
-
-
         mapView = mapFragment.getView();
         if (mapView != null &&
                 mapView.findViewById(1) != null) {
@@ -318,10 +319,11 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                 .setCancelable(false)
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        mLocationPermissionsGranted = true;
                         Intent enableGpsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                         startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
-                        mLocationPermissionsGranted = true;
-                        initMap();
+
+
                     }
                 });
         final AlertDialog alert = builder.create();
@@ -450,6 +452,12 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         marker.showInfoWindow();
         return false;
 
+    }
+    @Override
+    public void onResume()
+    {  // After a pause OR at startup
+        super.onResume();
+        //Refresh your stuff here
     }
 
 

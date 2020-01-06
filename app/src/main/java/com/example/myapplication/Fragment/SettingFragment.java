@@ -20,6 +20,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
     TextView privacy_tv;
     TextView about_tv;
     TextView changePassword_tv;
+    TextView backBtn;
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v=inflater.inflate(R.layout.fragment_setting, container, false);
         privacy_tv=v.findViewById(R.id.privacy_tv);
@@ -29,6 +30,8 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
         privacy_tv.setOnClickListener(this);
         about_tv.setOnClickListener(this);
         changePassword_tv.setOnClickListener(this);
+        backBtn=v.findViewById(R.id.back_btn);
+        backBtn.setOnClickListener(this);
         return v;
     }
 
@@ -48,6 +51,9 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
         {
             Intent i=new Intent(getActivity(), ResetPasswordActivity.class);
             startActivity(i);
+        }
+        else if (view.getId() == R.id.back_btn) {
+            getActivity().onBackPressed();
         }
     }
 }

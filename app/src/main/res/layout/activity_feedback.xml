@@ -96,7 +96,6 @@
         android:layout_below="@id/result_rv"
         android:layout_marginLeft="@dimen/left"
         android:layout_marginRight="@dimen/left"
-
         android:id="@+id/review_et"/>
 
 </RelativeLayout>
