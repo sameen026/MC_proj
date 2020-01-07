@@ -32,6 +32,7 @@ public class ViewPlazaDetailsActivity extends AppCompatActivity implements OnMap
     public TextView slotCar;
     public TextView slotBike;
     public  Button backBtn;
+    TextView viewComments;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +60,8 @@ public class ViewPlazaDetailsActivity extends AppCompatActivity implements OnMap
         saveBtn.setOnClickListener(this);
         backBtn.setOnClickListener(this);
         feedbackBtn.setOnClickListener(this);
+        viewComments=findViewById(R.id.view_comment_tv);
+        viewComments.setOnClickListener(this);
 
     }
 
@@ -106,6 +109,10 @@ public class ViewPlazaDetailsActivity extends AppCompatActivity implements OnMap
         }
         else if(view.getId()==R.id.give_feedback_btn) {
             Intent i=new Intent(this,FeedbackActivity.class);
+            startActivity(i);
+        }
+        else if(view.getId()==R.id.view_comment_tv) {
+            Intent i=new Intent(this,ViewCommentsActivity.class);
             startActivity(i);
         }
 

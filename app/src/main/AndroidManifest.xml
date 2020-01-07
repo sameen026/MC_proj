@@ -40,6 +40,7 @@
         <activity android:name=".ui.ViewSavedPlazaActivity" />
         <activity android:name=".ui.FilterActivity" />
         <activity android:name=".ui.ViewPlazaDetailsActivity" />
+        <activity android:name=".ui.ViewCommentsActivity"/>
 
         <meta-data
             android:name="com.google.android.gms.version"
