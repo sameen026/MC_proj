@@ -3,7 +3,11 @@ package com.example.myapplication.Model;
 public class SavedPlaza {
     String savedPlazaId;
     String userId;
+    String plazaId;
 
+    public SavedPlaza(){
+
+    }
     public String getSavedPlazaId() {
         return savedPlazaId;
     }
@@ -28,7 +32,7 @@ public class SavedPlaza {
         this.plazaId = plazaId;
     }
 
-    String plazaId;
+
 
     public SavedPlaza(String savedPlazaId, String userId, String plazaId) {
         this.savedPlazaId = savedPlazaId;

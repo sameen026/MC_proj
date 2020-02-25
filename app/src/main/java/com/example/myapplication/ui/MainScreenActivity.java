@@ -11,6 +11,8 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -35,6 +37,10 @@ import com.example.myapplication.Fragment.SettingFragment;
 import com.example.myapplication.Fragment.ViewProfileFragment;
 import com.example.myapplication.Model.Plaza;
 import com.example.myapplication.R;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -50,10 +56,12 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 
@@ -85,7 +93,9 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     Marker marker;
     Location currentLocation;
     Address address;
+    private Polyline currentPolyline;
     Marker marker1;
+    GoogleSignInClient mGoogleSignInClient;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -97,9 +107,15 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         navigationView.setNavigationItemSelectedListener(this);
         searchBar = findViewById(R.id.searchBar);
         firebaseDatabase=FirebaseDatabase.getInstance().getReference().child("plaza");
-        Plaza p=new Plaza("aik or plaza",500,200,40,20,"daily","daily","non-registered",31.541335, 74.302519,"sameen");
-        firebaseDatabase.push().setValue(marker1);
         getLocationPermission();
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+
 //        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
 
@@ -127,7 +143,6 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
 //        });
 
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -146,7 +161,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     }
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onMapReady: map is ready");
         mMap = googleMap;
 
@@ -160,37 +175,81 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
             }
             mMap.setMyLocationEnabled(true);
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-            @Override
-            public void onInfoWindowClick(Marker marker) {
-                Intent intent = new Intent(getApplicationContext(),ViewPlazaDetailsActivity.class);
-                startActivity(intent);
-            }
-        });
-        mMap.setMyLocationEnabled(true);
-        googleMap.setOnMarkerClickListener(this);
-        firebaseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot s:dataSnapshot.getChildren())
-                {
-                    Plaza p=s.getValue(Plaza.class);
-                    LatLng location=new LatLng(p.getPlazaLatitude(),p.getPlazaLongitude());
-                    MarkerOptions options=new MarkerOptions().position(location).title(p.getPlazaName());
-                    if(p.getStatus().equals("unRegistered"))
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+//                    Intent intent = new Intent(getApplicationContext(),ViewPlazaDetailsActivity.class);
+//                    startActivity(intent);
+                    LatLng pos = marker.getPosition();
+                    //Umar's Code
+
+                    Query query = FirebaseDatabase.getInstance().getReference("plaza")
+                            .orderByChild("plazaLatitude")
+                            .equalTo(pos.latitude);
+                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists()){
+                                if(dataSnapshot.getChildrenCount() == 1){
+                                    Plaza p = dataSnapshot.getValue(Plaza.class);
+                                    for(DataSnapshot data: dataSnapshot.getChildren()){
+                                        p = data.getValue(Plaza.class);
+                                    }
+                                    if(p.getStatus().equals("Registered")) {
+                                        Intent i = new Intent(getApplicationContext(), ViewPlazaDetailsActivity.class);
+                                        i.putExtra("plaza", p);
+                                        startActivity(i);
+                                    }else{
+                                        Toast.makeText(getApplicationContext(),"This Plaza is not Registered.",Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }else{
+                                Toast.makeText(getApplicationContext(),"Not found but working",Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            });
+            mMap.setMyLocationEnabled(true);
+            googleMap.setOnMarkerClickListener(this);
+
+
+            firebaseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for(DataSnapshot s:dataSnapshot.getChildren())
                     {
 
-                        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                        Plaza p=s.getValue(Plaza.class);
+                        LatLng location=new LatLng(p.getPlazaLatitude(),p.getPlazaLongitude());
+
+                        MarkerOptions options=new MarkerOptions().position(location).title(p.getPlazaName());
+
+
+                        if(p.getStatus().equals("unRegistered"))
+                        {
+                            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                        }
+                        else
+                        {
+                            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                        }
+
+                        mMap.addMarker(options);
+
                     }
-                    else
-                    {
-                        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                    }
-                    mMap.addMarker(options);
                 }
-            }
-            public void onCancelled(@NonNull DatabaseError databaseError) { }
-        });
-        init();
+
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+
+            });
+            init();
         }
     }
     private void init() {
@@ -226,9 +285,12 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
 
     private void getDeviceLocation() {
         Log.d(TAG, "getDeviceLocation: getting the devices current location");
+
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
         try {
             if (mLocationPermissionsGranted) {
+
                 final Task location = mFusedLocationProviderClient.getLastLocation();
                 location.addOnCompleteListener(new OnCompleteListener() {
                     @Override
@@ -236,9 +298,11 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                         if (task.isSuccessful()) {
                             Log.d(TAG, "onComplete: found location!");
                             currentLocation = (Location) task.getResult();
+
                             moveCamera(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()),
                                     DEFAULT_ZOOM,
                                     "My Location");
+
                         } else {
                             Log.d(TAG, "onComplete: current location is null");
                             Toast.makeText(MainScreenActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
@@ -266,6 +330,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                 @Override
                 public void onInfoWindowClick(Marker marker) {
 
+
                 }
             });
         }
@@ -276,7 +341,11 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     private void initMap() {
         Log.d(TAG, "initMap: initializing map");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+
+
         mapFragment.getMapAsync(MainScreenActivity.this);
+
+
         mapView = mapFragment.getView();
         if (mapView != null &&
                 mapView.findViewById(1) != null) {
@@ -322,13 +391,18 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                         mLocationPermissionsGranted = true;
                         Intent enableGpsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                         startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
-
-
                     }
                 });
         final AlertDialog alert = builder.create();
         alert.show();
     }
+    @Override
+    public void onResume()
+    {  // After a pause OR at startup
+        super.onResume();
+        //Refresh your stuff here
+    }
+
 
     public boolean isMapsEnabled(){
         final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
@@ -363,7 +437,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         }
     }
 
-//    private void hideSoftKeyboard() {
+    //    private void hideSoftKeyboard() {
 //        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 //    }
 //    public static void hideSoftKeyboard(Activity activity) {
@@ -377,9 +451,9 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
 //        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 //    }
     public static void hideSoftKeyboard(Context context, View view) {
-    InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
-    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-}
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -410,8 +484,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                         new SettingFragment()).add(new HomeFragment(), "HomeFragment").addToBackStack("HomeFragment").commit();
                 break;
             case R.id.nav_logout:
-                Intent i = new Intent(getApplicationContext(), firstStartActivity.class);
-                startActivity(i);
+                signOut();
                 break;
             case R.id.nav_savedPlazas:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
@@ -453,11 +526,20 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         return false;
 
     }
-    @Override
-    public void onResume()
-    {  // After a pause OR at startup
-        super.onResume();
-        //Refresh your stuff here
+    private void signOut() {
+        FirebaseAuth.getInstance().signOut();
+
+        mGoogleSignInClient.signOut().addOnCompleteListener(this, new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                // ...
+                Toast.makeText(getApplicationContext(),"Signout Successfully",Toast.LENGTH_LONG);
+
+                startActivity(new Intent(getApplicationContext(),SigninActivity.class));
+
+            }
+        });
+        finish();
     }
 
 

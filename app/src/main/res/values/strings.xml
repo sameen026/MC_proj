@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Park@Ease</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
@@ -31,6 +31,7 @@
     <string name="have_account_str">Already have an account?<font color='#25cfad'> Signin</font></string>
     <string name="not_have_account_str">Not have an account?<font color='#25cfad'> Signup Now</font></string>
     <string name="title_activity_maps">Map</string>
+    <string name="signUp_with_G">Signup with <font color='#25cfad'> Google</font></string>
 
 
     <string name="AboutUs">

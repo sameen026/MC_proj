@@ -55,7 +55,7 @@
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_marginTop="85dp"
-        android:layout_height="250dp"
+        android:layout_height="200dp"
         class="com.google.android.gms.maps.MapFragment" />
 
     <TextView
@@ -68,10 +68,43 @@
         android:layout_marginTop="20dp"
         android:layout_marginLeft="20dp"/>
 
+    <uz.jamshid.library.ExactRatingBar
+        android:id="@+id/rate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_below="@id/plaza_name_tv"
+        app:starCount="5"
+        app:isIndicator="false"
+        app:starFillColor="@color/colorPrimary"
+        app:starSize="30"
+        app:starValue="0.0"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="5dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Loading"
+        android:layout_toRightOf="@id/rate"
+        android:layout_below="@id/plaza_name_tv"
+        android:layout_marginLeft="10dp"
+        android:id="@+id/view_comments_count_tv"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View all Feedbacks"
+        android:layout_below="@id/plaza_name_tv"
+        android:layout_marginRight="20dp"
+        android:id="@+id/view_comment_tv"
+        android:layout_alignParentRight="true"/>
+
     <ImageView
         android:id="@+id/loc_img"
         android:layout_marginTop="20dp"
-        android:layout_below="@id/plaza_name_tv"
+        android:layout_below="@id/rate"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:background="@drawable/ic_location_on_black_24dp"
@@ -80,7 +113,7 @@
         android:id="@+id/plaza_area_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/plaza_name_tv"
+        android:layout_below="@id/rate"
         android:layout_toRightOf="@id/loc_img"
         android:layout_marginTop="30dp"
         android:layout_marginLeft="20dp"/>
@@ -157,7 +190,7 @@
         android:id="@+id/give_feedback_btn"
         android:layout_width="170dp"
         android:layout_height="wrap_content"
-        android:text="Give Feedback"
+        android:text="Leave Feedback"
         android:layout_below="@id/slot_car_tv"
         android:background="@drawable/custom_button"
         android:textColor="@color/white"

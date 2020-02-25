@@ -1,13 +1,15 @@
 package com.example.myapplication.Model;
 
-public class Plaza {
+
+import java.io.Serializable;
+
+public class Plaza  implements Serializable {
+    String plazaID;
     String plazaName;
-    int totalSlots;
-    int availableSlots;
-
-    public Plaza() {
-    }
-
+    int bikeAvailableSlots;
+    int carAvailableSlots;
+    int bikeTotalSlots;
+    int carTotalSlots;
     double carFee;
     double bikeFee;
     String carPolicyType;
@@ -16,19 +18,63 @@ public class Plaza {
     double plazaLatitude;
     double plazaLongitude;
     String userId;
+    String area;
 
-    public String getUserId() {
-        return userId;
+    public String getPlazaID() {
+        return plazaID;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setPlazaID(String plazaID) {
+        this.plazaID = plazaID;
     }
 
-    public Plaza( String plazaName, int totalSlots, int availableSlots, double carFee, double bikeFee, String carPolicyType, String bikePolicyType, String status, double plazaLatitude, double plazaLongitude, String userId) {
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+    public int getBikeAvailableSlots() {
+        return bikeAvailableSlots;
+    }
+
+    public void setBikeAvailableSlots(int bikeAvailableSlots) {
+        this.bikeAvailableSlots = bikeAvailableSlots;
+    }
+
+    public int getCarAvailableSlots() {
+        return carAvailableSlots;
+    }
+
+    public void setCarAvailableSlots(int carAvailableSlots) {
+        this.carAvailableSlots = carAvailableSlots;
+    }
+
+    public int getBikeTotalSlots() {
+        return bikeTotalSlots;
+    }
+
+    public void setBikeTotalSlots(int bikeTotalSlots) {
+        this.bikeTotalSlots = bikeTotalSlots;
+    }
+
+    public int getCarTotalSlots() {
+        return carTotalSlots;
+    }
+
+    public void setCarTotalSlots(int carTotalSlots) {
+        this.carTotalSlots = carTotalSlots;
+    }
+
+    public Plaza(String plazaID, String plazaName, int bikeAvailableSlots, int carAvailableSlots, int bikeTotalSlots, int carTotalSlots, double carFee, double bikeFee, String carPolicyType, String bikePolicyType, String status, double plazaLatitude, double plazaLongitude, String userId, String area) {
+        this.plazaID = plazaID;
         this.plazaName = plazaName;
-        this.totalSlots = totalSlots;
-        this.availableSlots = availableSlots;
+        this.bikeAvailableSlots = bikeAvailableSlots;
+        this.carAvailableSlots = carAvailableSlots;
+        this.bikeTotalSlots = bikeTotalSlots;
+        this.carTotalSlots = carTotalSlots;
         this.carFee = carFee;
         this.bikeFee = bikeFee;
         this.carPolicyType = carPolicyType;
@@ -37,7 +83,23 @@ public class Plaza {
         this.plazaLatitude = plazaLatitude;
         this.plazaLongitude = plazaLongitude;
         this.userId = userId;
+        this.area = area;
     }
+
+    public Plaza() {
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+
 
 
     public String getPlazaName() {
@@ -48,21 +110,7 @@ public class Plaza {
         this.plazaName = plazaName;
     }
 
-    public int getTotalSlots() {
-        return totalSlots;
-    }
 
-    public void setTotalSlots(int totalSlots) {
-        this.totalSlots = totalSlots;
-    }
-
-    public int getAvailableSlots() {
-        return availableSlots;
-    }
-
-    public void setAvailableSlots(int availableSlots) {
-        this.availableSlots = availableSlots;
-    }
 
     public double getCarFee() {
         return carFee;

@@ -6,10 +6,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication.Model.Plaza;
+import com.example.myapplication.Model.SavedPlaza;
 import com.example.myapplication.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -18,18 +22,23 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class ViewSavedPlazaActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener {
     public GoogleMap googleMap;
     public MapFragment mapFragment;
-    public Button shareBtn;
-    public  Button deleteBtn;
-    public TextView name;
-    public TextView area;
-    public TextView chargesCar;
-    public TextView chargesBike;
-    public  Button backBtn;
-    public  Button feedbackBtn;
+    public Button shareBtn, backBtn, feedbackBtn, deleteBtn;
+    public TextView name, area, chargesCar, chargesBike, slotCar, slotBike;
+    Intent i;
+    Plaza p;
+    DatabaseReference myDB;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,15 +48,28 @@ public class ViewSavedPlazaActivity extends AppCompatActivity implements OnMapRe
         shareBtn=findViewById(R.id.share_btn);
         deleteBtn=findViewById(R.id.delete_btn);
         feedbackBtn=findViewById(R.id.give_feedback_btn);
+        i = getIntent();
+        p =(Plaza) i.getSerializableExtra("plaza");
+        myDB = FirebaseDatabase.getInstance().getReference();
 
         name=findViewById(R.id.plaza_name_tv);
-        name.setText("The Plaza");
+        name.setText(p.getPlazaName());
+
         area=findViewById(R.id.plaza_area_tv);
-        area.setText("Gulberg");
+        area.setText(p.getArea());
+
         chargesCar=findViewById(R.id.plaza_charges_car_tv);
-        chargesCar.setText("20 Rs per hour for car");
+        chargesCar.setText(Double.toString(p.getCarFee())+" Rs Daily for car");
+
         chargesBike=findViewById(R.id.plaza_charges_bike_tv);
-        chargesBike.setText("10 Rs per hour for bike");
+        chargesBike.setText(Double.toString(p.getBikeFee())+" Rs Daily for car");
+
+        slotCar=findViewById(R.id.slot_car_tv);
+        slotCar.setText(p.getCarAvailableSlots()+" slots available for cars");
+
+        slotBike=findViewById(R.id.slot_bike_tv);
+        slotBike.setText(p.getBikeAvailableSlots()+" slots available for bikes");
+
         backBtn=findViewById(R.id.back_btn);
         shareBtn.setOnClickListener(this);
         deleteBtn.setOnClickListener(this);
@@ -73,9 +95,9 @@ public class ViewSavedPlazaActivity extends AppCompatActivity implements OnMapRe
             googleMap.getUiSettings().setZoomControlsEnabled(true);
             //
 
-            LatLng placeLocation = new LatLng(31.570611, 74.310223); //Make them global
+            LatLng placeLocation = new LatLng(p.getPlazaLatitude(), p.getPlazaLongitude()); //Make them global
             Marker placeMarker = googleMap.addMarker(new MarkerOptions().position(placeLocation)
-                    .title("PUCIT"));
+                    .title(p.getPlazaName()));
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(placeLocation));
             googleMap.animateCamera(CameraUpdateFactory.zoomTo(10), 1000, null);
 
@@ -116,6 +138,31 @@ public class ViewSavedPlazaActivity extends AppCompatActivity implements OnMapRe
 
                     public void onClick(DialogInterface dialog, int whichButton) {
                         //your deleting code
+                        Query query = myDB.child("savedPlaza")
+                                .orderByChild("userId")
+                                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+                        query.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if(dataSnapshot.exists()){
+                                    for(DataSnapshot data: dataSnapshot.getChildren()){
+                                        SavedPlaza sP = data.getValue(SavedPlaza.class);
+                                        if(p.getPlazaID().equals(sP.getPlazaId())){
+                                            data.getRef().removeValue();
+                                            Toast.makeText(getApplicationContext(),"Plaza deleted successfully",Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                    //After deletion
+                                    startActivity(new Intent(getApplicationContext(),MainScreenActivity.class));
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
                         dialog.dismiss();
                     }
 

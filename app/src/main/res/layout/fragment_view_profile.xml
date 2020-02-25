@@ -55,14 +55,7 @@
             android:layout_marginLeft="30dp"
             android:text="Sameen"
             android:layout_below="@+id/tv1_view_profile_rl"/>
-        <Button
-            android:id="@+id/img1"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="40dp"
-            android:layout_marginRight="20dp"
-            android:background="@drawable/edit"/>
+
         </RelativeLayout>
 
         <RelativeLayout
@@ -73,14 +66,6 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="0dp">
 
-            <Button
-                android:id="@+id/img2"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="30dp"
-                android:background="@drawable/edit" />
 
             <TextView
                 android:id="@+id/tv4_view_profile_rl"

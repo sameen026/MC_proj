@@ -22,6 +22,7 @@ public class firstStartActivity extends AppCompatActivity {
 //                Toast.makeText(getApplicationContext(),"Signin Button Clicked",Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(getApplicationContext(), SigninActivity.class);
                 startActivity(i);
+                finish();
             }
         });
 //        Login
@@ -32,6 +33,7 @@ public class firstStartActivity extends AppCompatActivity {
 //                Toast.makeText(getApplicationContext(),"Signin Button Clicked",Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(getApplicationContext(), SignupActivity.class);
                 startActivity(i);
+                finish();
             }
         });
     }
