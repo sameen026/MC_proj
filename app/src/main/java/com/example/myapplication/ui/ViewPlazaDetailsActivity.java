@@ -81,11 +81,11 @@ public class ViewPlazaDetailsActivity extends AppCompatActivity implements OnMap
         saveBtn.setOnClickListener(this);
         backBtn.setOnClickListener(this);
         feedbackBtn.setOnClickListener(this);
-        loadratingStars();
+        loadRatingStars();
 
     }
 
-    private void loadratingStars() {
+    private void loadRatingStars() {
         Query query = FirebaseDatabase.getInstance().getReference().child("Feedback")
                 .orderByChild("plazaId")
                 .equalTo(p.getPlazaID());

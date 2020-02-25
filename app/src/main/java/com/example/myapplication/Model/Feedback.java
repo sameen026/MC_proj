@@ -42,6 +42,7 @@ public class Feedback {
         this.ratings = ratings;
         this.review = review;
     }
+    public Feedback(){}
 
     String ratings;
     String review;

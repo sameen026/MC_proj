@@ -329,8 +329,41 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
+//                    Intent intent = new Intent(getApplicationContext(),ViewPlazaDetailsActivity.class);
+//                    startActivity(intent);
+                    LatLng pos = marker.getPosition();
+                    //Umar's Code
 
+                    Query query = FirebaseDatabase.getInstance().getReference("plaza")
+                            .orderByChild("plazaLatitude")
+                            .equalTo(pos.latitude);
+                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists()){
+                                if(dataSnapshot.getChildrenCount() == 1){
+                                    Plaza p = dataSnapshot.getValue(Plaza.class);
+                                    for(DataSnapshot data: dataSnapshot.getChildren()){
+                                        p = data.getValue(Plaza.class);
+                                    }
+                                    if(p.getStatus().equals("Registered")) {
+                                        Intent i = new Intent(getApplicationContext(), ViewPlazaDetailsActivity.class);
+                                        i.putExtra("plaza", p);
+                                        startActivity(i);
+                                    }else{
+                                        Toast.makeText(getApplicationContext(),"This Plaza is not Registered.",Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }else{
+                                Toast.makeText(getApplicationContext(),"Not found but working",Toast.LENGTH_SHORT).show();
+                            }
+                        }
 
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
                 }
             });
         }

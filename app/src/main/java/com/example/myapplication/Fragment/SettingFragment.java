@@ -25,13 +25,14 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
         View v=inflater.inflate(R.layout.fragment_setting, container, false);
         privacy_tv=v.findViewById(R.id.privacy_tv);
         about_tv=v.findViewById(R.id.about_us__tv);
-        changePassword_tv=v.findViewById(R.id.change_pass_tv);
+        //changePassword_tv=v.findViewById(R.id.change_pass_tv);
 
         privacy_tv.setOnClickListener(this);
         about_tv.setOnClickListener(this);
-        changePassword_tv.setOnClickListener(this);
+        //changePassword_tv.setOnClickListener(this);
         backBtn=v.findViewById(R.id.back_btn);
         backBtn.setOnClickListener(this);
+
         return v;
     }
 
@@ -45,11 +46,6 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
         else if(view.getId()==R.id.about_us__tv)
         {
             Intent i=new Intent(getActivity(), AboutUsActivity.class);
-            startActivity(i);
-        }
-        else if(view.getId()==R.id.change_pass_tv)
-        {
-            Intent i=new Intent(getActivity(), ResetPasswordActivity.class);
             startActivity(i);
         }
         else if (view.getId() == R.id.back_btn) {
