@@ -18,6 +18,7 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.HeaderViewListAdapter;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -31,6 +32,8 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 
+import com.android.volley.Header;
+import com.bumptech.glide.load.model.Headers;
 import com.example.myapplication.Fragment.HomeFragment;
 import com.example.myapplication.Fragment.SavedPlazaFragment;
 import com.example.myapplication.Fragment.SettingFragment;
@@ -93,8 +96,6 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     Marker marker;
     Location currentLocation;
     Address address;
-    private Polyline currentPolyline;
-    Marker marker1;
     GoogleSignInClient mGoogleSignInClient;
 
     @Override
@@ -104,6 +105,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
 
         drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
+//         header = navigationView.getHeaderView(1);
         navigationView.setNavigationItemSelectedListener(this);
         searchBar = findViewById(R.id.searchBar);
         firebaseDatabase=FirebaseDatabase.getInstance().getReference().child("plaza");

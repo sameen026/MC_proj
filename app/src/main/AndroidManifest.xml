@@ -19,7 +19,13 @@
         android:theme="@style/AppTheme">
 
         <activity android:name=".DBTest" />
-        <activity android:name=".ui.SigninActivity"></activity>
+        <activity android:name=".ui.SigninActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".ui.MainScreenActivity">
 
         </activity>
@@ -30,11 +36,7 @@
             android:name=".ui.SplashActivity"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".ui.firstStartActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".ui.EnterCodeActivity"></activity>
         <activity android:name=".ui.ChangePasswordActivity" />

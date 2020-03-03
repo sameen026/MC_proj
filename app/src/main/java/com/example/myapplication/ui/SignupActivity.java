@@ -28,6 +28,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -40,7 +41,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     TextInputLayout userName, email, password, cPassword;
     String userNameString, emailString, passwordString, cPasswordString;
     Button signUpBtn;
-    TextView googleSignUpText, textSignUp;
+    TextView googleSignUpText, textSignIn;
     DatabaseReference myDB;
     GoogleSignInClient mGoogleSignInClient;
     FirebaseAuth fAuth;
@@ -57,11 +58,8 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         cPassword = findViewById(R.id.c_password);
         signUpBtn = findViewById(R.id.signup_btn);
         googleSignUpText = findViewById(R.id.google_signup_text);
-        textSignUp =  findViewById(R.id.or_text);
-        userNameString = userName.getEditText().getText().toString();
-        emailString = email.getEditText().getText().toString();
-        passwordString = password.getEditText().getText().toString();
-        cPasswordString = cPassword.getEditText().getText().toString();
+        textSignIn =  findViewById(R.id.or_text);
+
         myDB = FirebaseDatabase.getInstance().getReference("user");
         fAuth = FirebaseAuth.getInstance();
 
@@ -70,7 +68,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
         //Setting click listeners
         googleSignUpText.setOnClickListener(this);
         signUpBtn.setOnClickListener(this);
-        textSignUp.setOnClickListener(this);
+        textSignIn.setOnClickListener(this);
 
 
 
@@ -86,46 +84,71 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         if(v.getId() == R.id.signup_btn) {
+            userNameString = userName.getEditText().getText().toString();
+            emailString = email.getEditText().getText().toString();
+            passwordString = password.getEditText().getText().toString();
+            cPasswordString = cPassword.getEditText().getText().toString();
+
             if (validateEmail() & validatePassword() & validateUserName() & validatePasswordMisMatch()) {
                 fAuth.createUserWithEmailAndPassword(emailString, passwordString).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            //Writing data to realtime database
-//                            String id = myDB.push().getKey();
-//                            User usr = new User(id, emailString, userNameString, passwordString, "membership");
-//                            myDB.child(id).setValue(usr);
-
-                            //Directing to signin page to Login to app
-//                            startActivity(new Intent(SignupActivity.this, SigninActivity.class));
-//                            finish();
-                        } else {
-                            //If the user is not added to db.
-                            Toast.makeText(getApplicationContext(),task.getException().toString(),Toast.LENGTH_SHORT).show();
-//                            email.setError("Email already registered.");
+                            final FirebaseUser user = fAuth.getCurrentUser();
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(userNameString)
+                                    .build();
+                            user.updateProfile(profileUpdates)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Toast.makeText(getApplicationContext(),"SignUp Successful", Toast.LENGTH_SHORT).show();
+                                                String id = myDB.push().getKey();
+                                                User usr = new User(id, user.getEmail(), user.getDisplayName(), "membership",user.getPhotoUrl().toString());
+                                                myDB.child(id).setValue(usr);
+                                                startActivity(new Intent(SignupActivity.this, SigninActivity.class));
+                                                finish();
+                                            }else{
+                                                Toast.makeText(getApplicationContext(), "Username not set, Please set from app", Toast.LENGTH_SHORT).show();
+                                                startActivity(new Intent(SignupActivity.this, SigninActivity.class));
+                                                finish();
+                                            }
+                                        }
+                                    });
+                        } else if(task.getException().toString().equals("com.google.firebase.auth.FirebaseAuthUserCollisionException: The email address is already in use by another account.")){
+                            //If user is already registered.
+                            email.setError("Email Already Registered.");
+                            password.getEditText().setText("");
+                            cPassword.getEditText().setText("");
+                        }else{
+                            Toast.makeText(getApplicationContext(),"Incorrect username or Password",Toast.LENGTH_SHORT).show();
+                            email.setError(" ");
+                            password.setError(" ");
+                            Log.i("Umar",task.getException().toString());
                         }
                     }
                 });
             }
         }else if(v.getId() == R.id.sign_in_button){
             startActivity(new Intent(SignupActivity.this, SigninActivity.class));
+            finish();
         }else if(v.getId() == R.id.google_signup_text){
             signIn();
+        }else if(v.getId() == R.id.or_text){
+            startActivity(new Intent(SignupActivity.this, SigninActivity.class));
+            finish();
         }
-
     }
 
 
     @Override
     protected void onStart() {
         super.onStart();
-
-        //If the user has already been registered to the app
+        //If the user was already logged in to the app
         if (fAuth.getCurrentUser() != null) {
-            startActivity(new Intent(SignupActivity.this, MainScreenActivity.class));
-            finish();
+            fAuth.signOut();
         }
-
     }
 
     private void signIn() {
@@ -161,24 +184,24 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            //Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = fAuth.getCurrentUser();
-
-                            //Start of Search
-                            Query query = FirebaseDatabase.getInstance().getReference("user").orderByChild("email").equalTo(user.getEmail());
+                            final FirebaseUser user = fAuth.getCurrentUser();
+                            Query query = FirebaseDatabase.getInstance().getReference().child("user")
+                                    .orderByChild("email")
+                                    .equalTo(user.getEmail());
                             query.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     if(dataSnapshot.exists()){
-                                        //Do something to verify password
-                                        AskOption().show();
-
+                                        //User have already been registered to our app.
+                                        // There isn't anything to do now
+                                        startActivity(new Intent(SignupActivity.this, MainScreenActivity.class));
+                                        finish();
                                     }else{
                                         String id = myDB.push().getKey();
-                                        User usr = new User(id, fAuth.getCurrentUser().getEmail(), fAuth.getCurrentUser().getDisplayName(), "ItsADummyPassword", "membership");
+                                        User usr = new User(id, user.getEmail(), user.getDisplayName(), "membership",user.getPhotoUrl().toString());
                                         myDB.child(id).setValue(usr);
-                                        startActivity(new Intent(getApplicationContext(), MainScreenActivity.class));
-                                        //Toast.makeText(getApplicationContext(),"Email not found in DB",Toast.LENGTH_LONG).show();
+                                        startActivity(new Intent(SignupActivity.this, MainScreenActivity.class));
+                                        finish();
                                     }
                                 }
 
@@ -187,14 +210,11 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
                                 }
                             });
-                            //End of Search
-
                             //updateUI(user);
-                        } else {
-                            Toast.makeText(getApplicationContext(), "Sign in failed", Toast.LENGTH_SHORT).show();
+                        } else{
+                            Toast.makeText(getApplicationContext(), "Something went wrong, Sign up again.", Toast.LENGTH_SHORT).show();
                             // If sign in fails, display a message to the user.
                             Log.w("zzz", "signInWithCredential:failure", task.getException());
-                            //Snackbar.make(findViewById(R.id.main_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
                             //updateUI(null);
                         }
 
@@ -265,11 +285,10 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
 
         if (!pass.equals(cPass)) {
             cPassword.setError("Password didn't match");
-            Toast.makeText(getApplicationContext(), cPass, Toast.LENGTH_SHORT).show();
             return false;
         } else {
             //Need to validate the password here
-            password.setError(null);
+            cPassword.setError(null);
             return true;
         }
     }

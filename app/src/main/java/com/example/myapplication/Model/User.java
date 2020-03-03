@@ -4,18 +4,32 @@ public class User {
     String userId;
     String email;
     String name;
-    String password;
     String type;
+    String imageURL;
 
     public User(){}
-    public User(String id, String email, String name, String password, String type) {
+    public User(String id, String email, String name, String type, String imageURL) {
         this.userId = id;
         this.email = email;
         this.name = name;
-        this.password = password;
         this.type = type;
+        this.imageURL = imageURL;
     }
 
+    public User(User user){
+        this.userId = user.userId;
+        this.email = user.email;
+        this.name = user.name;
+        this.type = user.type;
+        this.imageURL = user.imageURL;
+    }
+    public String getImageURL(){
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL){
+        this.imageURL = imageURL;
+    }
     public String getId() {
         return userId;
     }
@@ -40,13 +54,6 @@ public class User {
         this.name = name;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public String getType() {
         return type;

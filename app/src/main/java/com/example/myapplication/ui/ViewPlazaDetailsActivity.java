@@ -166,7 +166,6 @@ public class ViewPlazaDetailsActivity extends AppCompatActivity implements OnMap
             Query query = FirebaseDatabase.getInstance().getReference().child("Feedback")
                     .orderByChild("plazaId")
                     .equalTo(p.getPlazaID());
-            Log.i("MyTag123",p.getPlazaID());
             query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

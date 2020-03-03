@@ -38,6 +38,7 @@ public class ViewCommentsActivity extends AppCompatActivity implements FeedbackA
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_comments);
+        setTitle("Comments");
         i = getIntent();
         p = (Plaza)i.getSerializableExtra("plaza");
         myDB = FirebaseDatabase.getInstance().getReference();

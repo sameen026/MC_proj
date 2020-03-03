@@ -7,10 +7,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,23 +19,18 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
-
-
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
 public class SigninActivity extends AppCompatActivity {
     private static final String TAG = "Errir";
     TextInputLayout email, password;
@@ -92,82 +85,23 @@ public class SigninActivity extends AppCompatActivity {
 //                Toast.makeText(getApplicationContext(),"Signin Button Clicked",Toast.LENGTH_SHORT).show();
                 if(validateEmail() & validatePassword())
                 {
-//                    Query query = FirebaseDatabase.getInstance().getReference("user").orderByChild("email").equalTo(email.getEditText().getText().toString());
-//                    query.addListenerForSingleValueEvent(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                            if(dataSnapshot.exists()){
-//                                //Do something to verify password
-//                                boolean isFound = false;
-//                                for(DataSnapshot data: dataSnapshot.getChildren()){
-//                                    User user = data.getValue(User.class);
-//                                    if(user.getEmail().equals("aleemahmada107@gmail.com")){
-//                                        isFound = true;
-//                                    }
-//                                }
-//                                if(isFound) {
-//                                    Toast.makeText(getApplicationContext(), "Email found", Toast.LENGTH_LONG).show();
-//                                }else
-//                                {
-//                                    Toast.makeText(getApplicationContext(), "Email not found", Toast.LENGTH_LONG).show();
-//                                }
-//
-//                            }else{
-//                                Toast.makeText(getApplicationContext(),"Email not found in DB",Toast.LENGTH_LONG).show();
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                        }
-//                    });
-//                    Intent i = new Intent(getApplicationContext(), MainScreenActivity.class);
-//                    startActivity(i);
                     emailString = email.getEditText().getText().toString();
                     passwordString = password.getEditText().getText().toString();
                     mAuth.signInWithEmailAndPassword(emailString, passwordString).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()){
-                                //Directing to Dashbaord Screen page to Login to app
+                                //Directing to Dashboard Screen page to Login to app
                                 startActivity(new Intent(getApplicationContext(), MainScreenActivity.class));
-                                //email.setError(null);
                                 finish();
+                            }else if(task.getException().toString().equals("com.google.firebase.auth.FirebaseAuthInvalidUserException: There is no user record corresponding to this identifier. The user may have been deleted.")){
+                                email.setError("Email not registered.");
+                                Log.i("Umar",task.getException().toString());
                             }else{
-                                //If the user is not already registered to db.
-                                Query query = FirebaseDatabase.getInstance().getReference("user").orderByChild("email").equalTo(emailString);
-                                query.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        if(dataSnapshot.exists()){
-                                            //Do something to verify password
-                                            User user;
-                                            Boolean isFound = false;
-                                            for(DataSnapshot data: dataSnapshot.getChildren()){
-                                                user = data.getValue(User.class);
-                                                if(user.getEmail().equals(emailString)){
-                                                    isFound = true;
-                                                    //Toast.makeText(getApplicationContext(),"User Found",Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
-                                            if(isFound){
-                                                AskOptionToSignin().show();
-                                            }
-
-                                        }else{
-                                            AskOption().show();
-                                            //Toast.makeText(getApplicationContext(),"Email not found in DB",Toast.LENGTH_LONG).show();
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                    }
-                                });
-
-                                //email.setError("Email or Password is Incorrect");
+                                email.setError(" ");
+                                password.setError(" ");
+                                Log.i("Umar",task.getException().toString());
+                                Toast.makeText(getApplicationContext(),"Email or Password is Incorrect.",Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -186,15 +120,12 @@ public class SigninActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if(currentUser != null){
             Intent i = new Intent(getApplicationContext(), MainScreenActivity.class);
             startActivity(i);
             finish();
         }
-
-//            Toast.makeText(getApplicationContext(),"User has already signed in to the app.",Toast.LENGTH_SHORT);
-
     }
 
 
@@ -202,19 +133,6 @@ public class SigninActivity extends AppCompatActivity {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent,RC_SIGN_IN);
     }
-
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
-//        if (requestCode == RC_SIGN_IN) {
-//            // The Task returned from this call is always completed, no need to attach
-//            // a listener.
-//            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-//            handleSignInResult(task);
-//        }
-//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -243,20 +161,24 @@ public class SigninActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            //Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            //Start of Code
-                            Query query = FirebaseDatabase.getInstance().getReference("user").orderByChild("email").equalTo(user.getEmail());
+                            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            Query query = FirebaseDatabase.getInstance().getReference().child("user")
+                                    .orderByChild("email")
+                                    .equalTo(user.getEmail());
                             query.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     if(dataSnapshot.exists()){
-                                        startActivity(new Intent(getApplicationContext(), MainScreenActivity.class));
+                                        //User have already been registered to our app.
+                                        // There isn't anything to do now
+                                        startActivity(new Intent(SigninActivity.this, MainScreenActivity.class));
                                         finish();
-
                                     }else{
-                                        AskOptionToSignup().show();
+                                        String id = myDB.push().getKey();
+                                        User usr = new User(id, user.getEmail(), user.getDisplayName(), "membership", user.getPhotoUrl().toString());
+                                        myDB.child(id).setValue(usr);
+                                        startActivity(new Intent(SigninActivity.this, MainScreenActivity.class));
+                                        finish();
                                     }
                                 }
 
@@ -265,37 +187,12 @@ public class SigninActivity extends AppCompatActivity {
 
                                 }
                             });
-
-                            //End of Code
-
-                            //updateUI(user);
                         } else {
                             Toast.makeText(getApplicationContext(),"Sign in failed",Toast.LENGTH_SHORT).show();
-                            // If sign in fails, display a message to the user.
-                            //Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            //Snackbar.make(findViewById(R.id.signin), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
-                            //updateUI(null);
                         }
-
-                        // ...
                     }
                 });
     }
-//    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-//        try {
-//            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-//
-//            // Signed in successfully, show authenticated UI.
-//            Intent i = new Intent(getApplicationContext(), MainScreenActivity.class);
-//            startActivity(i);
-//        } catch (ApiException e) {
-//            // The ApiException status code indicates the detailed failure reason.
-//            // Please refer to the GoogleSignInStatusCodes class reference for more information.
-//            Log.w("Error", "signInResult:failed code=" + e.getStatusCode());
-//
-//            //updateUI(null);
-//        }
-//    }
     private AlertDialog AskOption() {
         AlertDialog myQuittingDialogBox = new AlertDialog.Builder(this)
                 // set message, title, and icon
@@ -333,8 +230,9 @@ public class SigninActivity extends AppCompatActivity {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
                         dialog.dismiss();
+                        FirebaseUser currUser = FirebaseAuth.getInstance().getCurrentUser();
                         String id = myDB.push().getKey();
-                        User usr = new User(id, FirebaseAuth.getInstance().getCurrentUser().getEmail(), FirebaseAuth.getInstance().getCurrentUser().getDisplayName(), "ItsADummyPassword", "membership");
+                        User usr = new User(id, currUser.getEmail(), currUser.getDisplayName(), "membership", currUser.getPhotoUrl().toString());
                         myDB.child(id).setValue(usr);
                         startActivity(new Intent(getApplicationContext(), MainScreenActivity.class));
                         finish();

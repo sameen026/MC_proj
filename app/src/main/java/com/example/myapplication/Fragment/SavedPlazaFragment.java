@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,6 +37,7 @@ public class SavedPlazaFragment extends Fragment implements PlazaAdapter.MyViewH
     private PlazaAdapter pAdapter;
     public Button backBtn;
     DatabaseReference myDB;
+    ProgressBar mProgressBar;
 
     @Nullable
     @Override
@@ -43,6 +45,7 @@ public class SavedPlazaFragment extends Fragment implements PlazaAdapter.MyViewH
         View v = inflater.inflate(R.layout.fragment_saved_plaza_list, container, false);
 
         myDB = FirebaseDatabase.getInstance().getReference().child("savedPlaza");
+        mProgressBar = v.findViewById(R.id.progressBar);
 
 
         prepareSamplePlazaData();
@@ -91,9 +94,11 @@ public class SavedPlazaFragment extends Fragment implements PlazaAdapter.MyViewH
                                     }
                                 }else{
                                     if(plazaList.size() == 0){
+                                        mProgressBar.setVisibility(View.GONE);
                                         Toast.makeText(getActivity(),"There is no saved Plaza",Toast.LENGTH_SHORT).show();
                                     }
                                 }
+                                mProgressBar.setVisibility(View.GONE);
                                 pAdapter.notifyDataSetChanged();
                             }
 
@@ -107,6 +112,7 @@ public class SavedPlazaFragment extends Fragment implements PlazaAdapter.MyViewH
 
                 }else{
                     if(plazaList.size() == 0){
+                        mProgressBar.setVisibility(View.GONE);
                         Toast.makeText(getActivity(),"No saved Plaza",Toast.LENGTH_SHORT).show();
                     }
                 }
