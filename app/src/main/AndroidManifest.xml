@@ -17,7 +17,9 @@
         android:roundIcon="@mipmap/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ui.EnterEmail">
 
+        </activity>
         <activity android:name=".DBTest" />
         <activity android:name=".ui.SigninActivity">
             <intent-filter>
@@ -26,29 +28,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.MainScreenActivity">
-
-        </activity>
-        <activity android:name=".ui.SignupActivity">
-
-        </activity>
+        <activity android:name=".ui.MainScreenActivity"></activity>
+        <activity android:name=".ui.SignupActivity"></activity>
         <activity
             android:name=".ui.SplashActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".ui.firstStartActivity">
-
-        </activity>
-        <activity android:name=".ui.EnterCodeActivity"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ui.firstStartActivity"></activity>
+        <activity android:name=".ui.EnterCodeActivity" />
         <activity android:name=".ui.ChangePasswordActivity" />
-        <activity android:name=".ui.ViewCommentsActivity"
-            android:theme = "@style/AppTheme.feedbackTheme"/>
+        <activity
+            android:name=".ui.ViewCommentsActivity"
+            android:theme="@style/AppTheme.feedbackTheme" />
         <activity
             android:name=".ui.PopupEmailActivity"
             android:theme="@style/AppTheme.CustomTheme" />
         <activity
             android:name=".ui.PopupNameActivity"
             android:theme="@style/AppTheme.CustomTheme" />
-        <activity android:name=".ui.AboutUsActivity"></activity>
+        <activity android:name=".ui.AboutUsActivity" />
         <activity android:name=".ui.PrivacyPolicyActivity" />
         <activity android:name=".ui.ResetPasswordActivity" />
         <activity android:name=".ui.FeedbackActivity" />

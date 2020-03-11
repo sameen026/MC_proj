@@ -31,9 +31,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-public class SigninActivity extends AppCompatActivity {
+public class SigninActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "Errir";
     TextInputLayout email, password;
+    TextView forgotPassword;
     String emailString, passwordString;
     GoogleSignInClient mGoogleSignInClient;
     int RC_SIGN_IN = 0;
@@ -46,7 +47,8 @@ public class SigninActivity extends AppCompatActivity {
         setContentView(R.layout.activity_signin);
         email = findViewById(R.id.user_name);
         password=findViewById(R.id.pwd);
-        //fAuth = FirebaseAuth.getInstance();
+        forgotPassword = findViewById(R.id.forgot_pass_tv);
+        forgotPassword.setOnClickListener(this);
         mAuth = FirebaseAuth.getInstance();
 
 
@@ -68,14 +70,7 @@ public class SigninActivity extends AppCompatActivity {
 
 //        Signup
         TextView textSignup = (TextView) findViewById(R.id.or_text);
-        textSignup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                Toast.makeText(getApplicationContext(),"Signin Button Clicked",Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(getApplicationContext(), SignupActivity.class);
-                startActivity(i);
-            }
-        });
+        textSignup.setOnClickListener(this);
 
 //Login Button Pressed
         Button Signin_btn = (Button) findViewById(R.id.signin_btn);
@@ -311,5 +306,19 @@ public class SigninActivity extends AppCompatActivity {
     private boolean isValidEmail(String email) {
         String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
         return email.matches(regex);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id){
+            case R.id.forgot_pass_tv:
+                startActivity(new Intent(SigninActivity.this, EnterEmail.class));
+                break;
+            case R.id.or_text:
+                startActivity(new Intent(SigninActivity.this,SignupActivity.class));
+                finish();
+                break;
+        }
     }
 }
