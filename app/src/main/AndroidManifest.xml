@@ -17,22 +17,19 @@
         android:roundIcon="@mipmap/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.EnterEmail">
-
-        </activity>
-        <activity android:name=".DBTest" />
-        <activity android:name=".ui.SigninActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".ui.EnterEmail"></activity>
+        <activity android:name=".ui.SigninActivity"></activity>
         <activity android:name=".ui.MainScreenActivity"></activity>
         <activity android:name=".ui.SignupActivity"></activity>
         <activity
             android:name=".ui.SplashActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar" >
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        </activity>
         <activity android:name=".ui.firstStartActivity"></activity>
         <activity android:name=".ui.EnterCodeActivity" />
         <activity android:name=".ui.ChangePasswordActivity" />
@@ -64,5 +61,6 @@
             android:name="org.apache.http.legacy"
             android:required="false" />
     </application>
+
 
 </manifest>

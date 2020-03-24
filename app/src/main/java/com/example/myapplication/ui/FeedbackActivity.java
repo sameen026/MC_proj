@@ -23,7 +23,7 @@ public class FeedbackActivity extends AppCompatActivity implements View.OnClickL
     private Button btnSubmit;
     public Button backBtn;
     public String userId="-LxbPhmF0HoX4dkyNHBJ";
-    public String plazaId="-LxrRJT4nfkw9_KUARrC";
+    public String plazaId="-LxrRJTk0IMuX3bNqWZn";
     DatabaseReference firebaseDatabase;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

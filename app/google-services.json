@@ -8,7 +8,7 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:289467303517:android:a21c0338a33cada84c2fb4",
+        "mobilesdk_app_id": "1:289467303517:android:09dae821730d26464c2fb4",
         "android_client_info": {
           "package_name": "com.example.myapplication"
         }
@@ -37,7 +37,7 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDdMzZBF_cLRAdijs5uHaFqXJl2o2QqoU0"
+          "current_key": "AIzaSyD7IV22e9iYSyBu-SSGDYqZzKBS0AUpjiQ"
         }
       ],
       "services": {
