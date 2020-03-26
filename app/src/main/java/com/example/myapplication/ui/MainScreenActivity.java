@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -110,7 +111,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
 //         header = navigationView.getHeaderView(1);
         navigationView.setNavigationItemSelectedListener(this);
         searchBar = findViewById(R.id.searchBar);
-        firebaseDatabase=FirebaseDatabase.getInstance().getReference().child("plaza");
+        firebaseDatabase = FirebaseDatabase.getInstance().getReference().child("plaza");
         getLocationPermission();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -147,113 +148,110 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
 //        });
 
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "onActivityResult: called.");
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ENABLE_GPS: {
-                if(mLocationPermissionsGranted){
+                if (mLocationPermissionsGranted) {
                     initMap();
-                }
-                else{
+                } else {
                     getLocationPermission();
                 }
             }
         }
 
     }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         //Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onMapReady: map is ready");
         mMap = googleMap;
-            getDeviceLocation();
+        getDeviceLocation();
 
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-            if(mLocationPermissionsGranted)
-                mMap.setMyLocationEnabled(true);
-            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-                @Override
-                public void onInfoWindowClick(Marker marker) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        if (mLocationPermissionsGranted)
+            mMap.setMyLocationEnabled(true);
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
 //                    Intent intent = new Intent(getApplicationContext(),ViewPlazaDetailsActivity.class);
 //                    startActivity(intent);
-                    LatLng pos = marker.getPosition();
-                    //Umar's Code
+                LatLng pos = marker.getPosition();
+                //Umar's Code
 
-                    Query query = FirebaseDatabase.getInstance().getReference("plaza")
-                            .orderByChild("plazaLatitude")
-                            .equalTo(pos.latitude);
-                    query.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if(dataSnapshot.exists()){
-                                if(dataSnapshot.getChildrenCount() == 1){
-                                    Plaza p = dataSnapshot.getValue(Plaza.class);
-                                    for(DataSnapshot data: dataSnapshot.getChildren()){
-                                        p = data.getValue(Plaza.class);
-                                    }
-                                    if(p.getStatus().equals("Registered")) {
-                                        Intent i = new Intent(getApplicationContext(), ViewPlazaDetailsActivity.class);
-                                        i.putExtra("plaza", p);
-                                        startActivity(i);
-                                    }else{
-                                        Toast.makeText(getApplicationContext(),"This Plaza is not Registered.",Toast.LENGTH_SHORT).show();
-                                    }
+                Query query = FirebaseDatabase.getInstance().getReference("plaza")
+                        .orderByChild("plazaLatitude")
+                        .equalTo(pos.latitude);
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            if (dataSnapshot.getChildrenCount() == 1) {
+                                Plaza p = dataSnapshot.getValue(Plaza.class);
+                                for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                    p = data.getValue(Plaza.class);
                                 }
-                            }else{
-                                Toast.makeText(getApplicationContext(),"Not found but working",Toast.LENGTH_SHORT).show();
+                                if (p.getStatus().equals("Registered")) {
+                                    Intent i = new Intent(getApplicationContext(), ViewPlazaDetailsActivity.class);
+                                    i.putExtra("plaza", p);
+                                    startActivity(i);
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "This Plaza is not Registered.", Toast.LENGTH_SHORT).show();
+                                }
                             }
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Not found but working", Toast.LENGTH_SHORT).show();
                         }
+                    }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-                }
-            });
-            if(mLocationPermissionsGranted)
-                mMap.setMyLocationEnabled(true);
-            googleMap.setOnMarkerClickListener(this);
-
-
-            firebaseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for(DataSnapshot s:dataSnapshot.getChildren())
-                    {
-
-                        Plaza p=s.getValue(Plaza.class);
-                        LatLng location=new LatLng(p.getPlazaLatitude(),p.getPlazaLongitude());
-
-                        MarkerOptions options=new MarkerOptions().position(location).title(p.getPlazaName());
-
-
-                        if(p.getStatus().equals("unRegistered"))
-                        {
-                            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-                        }
-                        else
-                        {
-                            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                        }
-
-                        mMap.addMarker(options);
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
                     }
+                });
+            }
+        });
+        if (mLocationPermissionsGranted)
+            mMap.setMyLocationEnabled(true);
+        googleMap.setOnMarkerClickListener(this);
+
+
+        firebaseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot s : dataSnapshot.getChildren()) {
+
+                    Plaza p = s.getValue(Plaza.class);
+                    LatLng location = new LatLng(p.getPlazaLatitude(), p.getPlazaLongitude());
+
+                    MarkerOptions options = new MarkerOptions().position(location).title(p.getPlazaName());
+
+
+                    if (p.getStatus().equals("unRegistered")) {
+                        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                    } else {
+                        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                    }
+
+                    mMap.addMarker(options);
+
                 }
+            }
 
-                public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                }
+            }
 
-            });
-            init();
+        });
+        init();
     }
 
     private void init() {
@@ -270,13 +268,13 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
 
         Geocoder geocoder = new Geocoder(MainScreenActivity.this);
         List<Address> list = new ArrayList<>();
-        try{
+        try {
             list = geocoder.getFromLocationName(searchString, 1);
-        }catch (IOException e){
-            Log.e(TAG, "geoLocate: IOException: " + e.getMessage() );
+        } catch (IOException e) {
+            Log.e(TAG, "geoLocate: IOException: " + e.getMessage());
         }
 
-        if(list.size() > 0){
+        if (list.size() > 0) {
             address = list.get(0);
 
             Log.d(TAG, "geoLocate: found a location: " + address.toString());
@@ -291,9 +289,9 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         Log.d(TAG, "getDeviceLocation: getting the devices current location");
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         try {
-            if (mLocationPermissionsGranted) {
+            if (mLocationPermissionsGranted && manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 mFusedLocationProviderClient.getLastLocation().addOnCompleteListener(
                         new OnCompleteListener<Location>() {
                             @Override
@@ -312,12 +310,11 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                                 }
                             }
                         });
-                     }
-            else{
+            } else {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplication());
                 double latitude = Double.parseDouble(prefs.getString("current_latitude", "31.484896"));
-                double longitude = Double.parseDouble(prefs.getString("current_longitude", "74.3640150.0"));
-                moveCamera(new LatLng(latitude,longitude),
+                double longitude = Double.parseDouble(prefs.getString("current_longitude", "74.3640150"));
+                moveCamera(new LatLng(latitude, longitude),
                         DEFAULT_ZOOM, "My Location");
             }
         } catch (SecurityException e) {
@@ -326,7 +323,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     }
 
     @SuppressLint("MissingPermission")
-    private void requestNewLocationData(){
+    private void requestNewLocationData() {
 
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -346,9 +343,10 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         @Override
         public void onLocationResult(LocationResult locationResult) {
             Location mLastLocation = locationResult.getLastLocation();
-            currentLocation=mLastLocation;
+            currentLocation = mLastLocation;
         }
     };
+
     private void moveCamera(LatLng latLng, float zoom, String title) {
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
@@ -357,9 +355,9 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
             MarkerOptions options = new MarkerOptions()
                     .position(latLng)
                     .title(title);
-            if(marker!=null)
+            if (marker != null)
                 marker.remove();
-            marker=mMap.addMarker(options);
+            marker = mMap.addMarker(options);
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
@@ -374,22 +372,22 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                     query.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if(dataSnapshot.exists()){
-                                if(dataSnapshot.getChildrenCount() == 1){
+                            if (dataSnapshot.exists()) {
+                                if (dataSnapshot.getChildrenCount() == 1) {
                                     Plaza p = dataSnapshot.getValue(Plaza.class);
-                                    for(DataSnapshot data: dataSnapshot.getChildren()){
+                                    for (DataSnapshot data : dataSnapshot.getChildren()) {
                                         p = data.getValue(Plaza.class);
                                     }
-                                    if(p.getStatus().equals("Registered")) {
+                                    if (p.getStatus().equals("Registered")) {
                                         Intent i = new Intent(getApplicationContext(), ViewPlazaDetailsActivity.class);
                                         i.putExtra("plaza", p);
                                         startActivity(i);
-                                    }else{
-                                        Toast.makeText(getApplicationContext(),"This Plaza is not Registered.",Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "This Plaza is not Registered.", Toast.LENGTH_SHORT).show();
                                     }
                                 }
-                            }else{
-                                Toast.makeText(getApplicationContext(),"Not found but working",Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Not found but working", Toast.LENGTH_SHORT).show();
                             }
                         }
 
@@ -402,7 +400,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
             });
         }
 
-        hideSoftKeyboard(this,mapView);
+        hideSoftKeyboard(this, mapView);
     }
 
     private void initMap() {
@@ -434,7 +432,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                 FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             if (ContextCompat.checkSelfPermission(this.getApplicationContext(),
                     COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                if(isMapsEnabled()) {
+                if (isMapsEnabled()) {
                     mLocationPermissionsGranted = true;
                     initMap();
                 }
@@ -461,12 +459,12 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                         startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
                     }
                 })
-        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                initMap();
-            }
-        });
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        initMap();
+                    }
+                });
         final AlertDialog alert = builder.create();
         alert.show();
     }
@@ -477,10 +475,10 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         //Refresh your stuff here
     }
 
-    public boolean isMapsEnabled(){
-        final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+    public boolean isMapsEnabled() {
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+        if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             buildAlertMessageNoGps();
             return false;
         }
@@ -511,19 +509,6 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         }
     }
 
-    //    private void hideSoftKeyboard() {
-//        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-//    }
-//    public static void hideSoftKeyboard(Activity activity) {
-//        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-//        //Find the currently focused view, so we can grab the correct window token from it.
-//        View view = activity.getCurrentFocus();
-//        //If no view currently has focus, create a new one, just so we can grab a window token from it
-//        if (view == null) {
-//            view = new View(activity);
-//        }
-//        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-//    }
     public static void hideSoftKeyboard(Context context, View view) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -577,8 +562,8 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     }
 
     @Override
-    public void onSearchConfirmed(CharSequence text){
-        hideSoftKeyboard(this,mapView);
+    public void onSearchConfirmed(CharSequence text) {
+        hideSoftKeyboard(this, mapView);
         geoLocate();
 
 
@@ -586,7 +571,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
 
     @Override
     public void onButtonClicked(int buttonCode) {
-        switch (buttonCode){
+        switch (buttonCode) {
             case MaterialSearchBar.BUTTON_NAVIGATION:
                 drawer.openDrawer(Gravity.LEFT);
                 break;
@@ -611,9 +596,9 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 // ...
-                Toast.makeText(getApplicationContext(),"Signout Successfully",Toast.LENGTH_LONG);
+                Toast.makeText(getApplicationContext(), "Signout Successfully", Toast.LENGTH_LONG);
 
-                startActivity(new Intent(getApplicationContext(),SigninActivity.class));
+                startActivity(new Intent(getApplicationContext(), SigninActivity.class));
 
             }
         });
@@ -624,5 +609,26 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     public void onLocationChanged(Location location) {
         initMap();
 
+    }
+
+    BroadcastReceiver gpsLocationReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().matches("android.location.PROVIDERS_CHANGED"))
+               getLocationPermission();
+
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(gpsLocationReceiver, new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(gpsLocationReceiver);
     }
 }
