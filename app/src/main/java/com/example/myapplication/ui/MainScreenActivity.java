@@ -10,19 +10,28 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,13 +43,19 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.Fragment.HomeFragment;
 import com.example.myapplication.Fragment.SavedPlazaFragment;
 import com.example.myapplication.Fragment.SettingFragment;
 import com.example.myapplication.Fragment.ViewProfileFragment;
 import com.example.myapplication.Model.Plaza;
+import com.example.myapplication.PlacesAutoCompleteAdapte;
 import com.example.myapplication.R;
+import com.example.myapplication.RecyclerTouchListener;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -71,9 +86,19 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.example.myapplication.util.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
 
@@ -90,6 +115,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     private DrawerLayout drawer;
     private MaterialSearchBar searchBar;
     View mapView;
+    Button clear;
 
     //vars
     private Boolean mLocationPermissionsGranted = false;
@@ -100,6 +126,11 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     Location currentLocation;
     Address address;
     GoogleSignInClient mGoogleSignInClient;
+    RecyclerView recyclerView;
+    private List<String> locationList = new ArrayList<>();
+    private PlacesAutoCompleteAdapte pAdapter;
+    RelativeLayout layout;
+    public static  int count=0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -108,9 +139,12 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
 
         drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
-//         header = navigationView.getHeaderView(1);
         navigationView.setNavigationItemSelectedListener(this);
-        searchBar = findViewById(R.id.searchBar);
+        layout = findViewById(R.id.r_layout);
+
+        searchBar =findViewById(R.id.searchBar);
+        recyclerView = findViewById(R.id.recycler_view);
+
         firebaseDatabase = FirebaseDatabase.getInstance().getReference().child("plaza");
         getLocationPermission();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -118,35 +152,59 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
 
-//        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
+        recyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        pAdapter = new PlacesAutoCompleteAdapte(locationList);
 
-//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
-//                R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-//        drawer.addDrawerListener(toggle);
-//        toggle.syncState();
-//        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
-//                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
-//         AutocompleteFilter filter = new AutocompleteFilter.Builder()
-//                .setCountry("IN")
-//                .setTypeFilter(AutocompleteFilter.TYPE_FILTER_CITIES)
-//                .build();
-//        autocompleteFragment.setFilter(filter);
-//        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-//            @Override
-//            public void onPlaceSelected(com.google.android.libraries.places.compat.Place place) {
-//
-//            }
-//
-//            @Override
-//            public void onError(Status status) {
-//                status.toString();
-//            }
-//        });
+        searchBar.addTextChangeListener(new TextWatcher() {
+            Timer timer = new Timer();
+            int DELAY = 1000;
+            String chterm;
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
+            @Override
+            public void onTextChanged(CharSequence query, int i, int i1, int i2) {
+                Log.d("LOG_TAG", getClass().getSimpleName() + " text changed " + query);
+                ConnectivityManager conMgr =  (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo netInfo = conMgr.getActiveNetworkInfo();
+                if (netInfo == null){
+                   if(count==0) {
+                       Toast toast = Toast.makeText(getApplicationContext(), "Device is not connected to internet", Toast.LENGTH_SHORT);
+                       toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
+                       View view = toast.getView();
+                       view.setBackgroundResource(R.color.colorRed);
+                       TextView text = (TextView) view.findViewById(android.R.id.message);
+                       text.setTextColor(Color.parseColor("#000000"));
+                       toast.show();
+                       count++;
+                   }
+                }else{
+                    timer.cancel();
+                    chterm = query.toString();
+                    if(query.length() >= 2) {
+                        timer = new Timer();
+                        timer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                new GetServerData().execute(chterm);
+                            }
+                        }, DELAY);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                }
+
+        });
     }
 
     @Override
@@ -167,7 +225,6 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        //Toast.makeText(this, "Map is Ready", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onMapReady: map is ready");
         mMap = googleMap;
         getDeviceLocation();
@@ -247,9 +304,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
             }
 
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
-
         });
         init();
     }
@@ -258,13 +313,10 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         searchBar.setOnSearchActionListener(this);
         searchBar.setCardViewElevation(10);
         searchBar.setPlaceHolder("search here");
-        geoLocate();
     }
 
-    private void geoLocate() {
+    private void geoLocate(String searchString) {
         Log.d(TAG, "geoLocate: geolocating");
-
-        String searchString = searchBar.getText();
 
         Geocoder geocoder = new Geocoder(MainScreenActivity.this);
         List<Address> list = new ArrayList<>();
@@ -281,7 +333,6 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
             //Toast.makeText(this, address.toString(), Toast.LENGTH_SHORT).show();
             moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM,
                     address.getAddressLine(0));
-
         }
     }
 
@@ -517,8 +568,6 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //save last queries to disk
-        //lastSearches=searchBar.getLastSuggestions();
     }
 
     @Override
@@ -526,9 +575,19 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
+            recyclerView.setAlpha(0);
             super.onBackPressed();
         }
+    }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Log.d(null, "In on Key Down");
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+           recyclerView.setAlpha(0);
+            return false;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -564,9 +623,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     @Override
     public void onSearchConfirmed(CharSequence text) {
         hideSoftKeyboard(this, mapView);
-        geoLocate();
-
-
+        geoLocate(text.toString());
     }
 
     @Override
@@ -576,10 +633,10 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                 drawer.openDrawer(Gravity.LEFT);
                 break;
             case MaterialSearchBar.BUTTON_BACK:
+                recyclerView.setAlpha(0);
                 searchBar.disableSearch();
                 break;
         }
-
     }
 
     @Override
@@ -630,5 +687,81 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     protected void onStop() {
         super.onStop();
         unregisterReceiver(gpsLocationReceiver);
+    }
+
+    private class GetServerData extends AsyncTask<String, Void, ArrayList<String>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected ArrayList<String> doInBackground(String... params) {
+            ArrayList<String> resultList = null;
+            InputStreamReader in;
+            HttpURLConnection conn = null;
+            StringBuilder jsonResults = new StringBuilder();
+            try {
+                StringBuilder sb = new StringBuilder(String.format(
+                        "https://maps.googleapis.com/maps/api/place/autocomplete/json?input="+params[0]+"&components=country:pk&location=%s,%s&radius=50000&key=AIzaSyD7IV22e9iYSyBu-SSGDYqZzKBS0AUpjiQ&sessiontoken=1234567890",
+                        String.valueOf(currentLocation.getLatitude()),String.valueOf(currentLocation.getLongitude())));
+                URL url = new URL(sb.toString());
+                conn = (HttpURLConnection) url.openConnection();
+                in = new InputStreamReader(conn.getInputStream());
+
+                int read;
+                char[] buff = new char[1024];
+                while ((read = in.read(buff)) != -1) {
+                    jsonResults.append(buff, 0, read);
+                }
+            } catch (MalformedURLException e) {
+                Log.e(TAG, "Error processing Places API URL", e);
+                return resultList;
+            } catch (IOException e) {
+                Log.e(TAG, "Error connecting to Places API", e);
+                return resultList;
+            } finally {
+                if (conn != null) {
+                    conn.disconnect();
+                }
+            }
+
+            try {
+                JSONObject jsonObj = new JSONObject(jsonResults.toString());
+                JSONArray predsJsonArray = jsonObj.getJSONArray("predictions");
+                resultList = new ArrayList<String>(predsJsonArray.length());
+                for (int i = 0; i < predsJsonArray.length(); i++) {
+                    resultList.add(predsJsonArray.getJSONObject(i).getString(
+                            "description"));
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "Cannot process JSON results", e);
+            }
+
+            return resultList;
+
+        }
+
+        @Override
+        protected void onPostExecute(final ArrayList<String> locationList) {
+            super.onPostExecute(locationList);
+            pAdapter = new PlacesAutoCompleteAdapte(locationList);
+            recyclerView.setAdapter(pAdapter);
+            recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
+                @Override
+                public void onClick(View view, int position) {
+                    recyclerView.setAlpha(0);
+                    hideSoftKeyboard(getApplicationContext(), mapView);
+                    searchBar.setText(locationList.get(position));
+                    geoLocate(locationList.get(position));
+                }
+
+                @Override
+                public void onLongClick(View view, int position) {
+
+                }
+            }));
+        }
     }
 }
