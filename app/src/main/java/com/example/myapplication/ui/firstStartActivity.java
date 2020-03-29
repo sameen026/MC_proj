@@ -8,6 +8,8 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class firstStartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,5 +38,15 @@ public class firstStartActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+    protected void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(currentUser != null){
+            Intent i = new Intent(getApplicationContext(), MainScreenActivity.class);
+            startActivity(i);
+            finish();
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.example.myapplication.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.View;
 import android.widget.Toast;
 
@@ -27,7 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ViewCommentsActivity extends AppCompatActivity implements FeedbackAdapter.MyViewHolder.OnFeedbackClickListner, View.OnClickListener{
+public class ViewCommentsActivity extends AppCompatActivity implements View.OnClickListener{
     private List<Feedback> feedbackList = new ArrayList<>();
     private RecyclerView recyclerView;
     private FeedbackAdapter fAdapter;
@@ -38,7 +39,9 @@ public class ViewCommentsActivity extends AppCompatActivity implements FeedbackA
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_comments);
-        setTitle("Comments");
+//        setTitle("Comments");
+        getSupportActionBar().setTitle(Html.fromHtml("<font color='#ffffff'>Comments</font>",1));
+
         i = getIntent();
         p = (Plaza)i.getSerializableExtra("plaza");
         myDB = FirebaseDatabase.getInstance().getReference();
@@ -84,10 +87,6 @@ public class ViewCommentsActivity extends AppCompatActivity implements FeedbackA
 
     }
 
-    @Override
-    public void onFeedbackClick(int position) {
-
-    }
 
     @Override
     public void onClick(View v) {

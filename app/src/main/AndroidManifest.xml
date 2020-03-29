@@ -18,7 +18,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ui.EnterEmail"></activity>
-        <activity android:name=".ui.SigninActivity"></activity>
+        <activity android:name=".ui.SigninActivity"
+            android:windowSoftInputMode="adjustResize"></activity>
         <activity android:name=".ui.MainScreenActivity"></activity>
         <activity android:name=".ui.SignupActivity"></activity>
         <activity

@@ -21,7 +21,7 @@ public class ProfileFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-       View v = inflater.inflate(R.layout.fragment_view_profile, container, false);
+        View v = inflater.inflate(R.layout.fragment_view_profile, container, false);
         mImageView = v.findViewById(R.id.profile_image);
         if(FirebaseAuth.getInstance().getCurrentUser()!= null &&
                 FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl()!= null){
