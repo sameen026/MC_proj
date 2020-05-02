@@ -9,6 +9,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -18,9 +20,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ui.EnterEmail"></activity>
-        <activity android:name=".ui.SigninActivity"
-            android:windowSoftInputMode="adjustResize"></activity>
-        <activity android:name=".ui.MainScreenActivity"></activity>
+        <activity android:name=".ui.SigninActivity"></activity>
+        <activity android:name=".ui.MainScreenActivity" android:windowSoftInputMode="stateVisible|adjustResize"></activity>
         <activity android:name=".ui.SignupActivity"></activity>
         <activity
             android:name=".ui.SplashActivity"
@@ -34,15 +35,9 @@
         <activity android:name=".ui.firstStartActivity"></activity>
         <activity android:name=".ui.EnterCodeActivity" />
         <activity android:name=".ui.ChangePasswordActivity" />
-        <activity
-            android:name=".ui.ViewCommentsActivity"
-            android:theme="@style/AppTheme.feedbackTheme" />
-        <activity
-            android:name=".ui.PopupEmailActivity"
-            android:theme="@style/AppTheme.CustomTheme" />
-        <activity
-            android:name=".ui.PopupNameActivity"
-            android:theme="@style/AppTheme.CustomTheme" />
+        <activity android:name=".ui.ViewCommentsActivity" android:theme="@style/AppTheme.feedbackTheme" />
+        <activity android:name=".ui.PopupEmailActivity" android:theme="@style/AppTheme.CustomTheme" />
+        <activity android:name=".ui.PopupNameActivity" android:theme="@style/AppTheme.CustomTheme" />
         <activity android:name=".ui.AboutUsActivity" />
         <activity android:name=".ui.PrivacyPolicyActivity" />
         <activity android:name=".ui.ResetPasswordActivity" />
@@ -50,6 +45,11 @@
         <activity android:name=".ui.ViewSavedPlazaActivity" />
         <activity android:name=".ui.FilterActivity" />
         <activity android:name=".ui.ViewPlazaDetailsActivity" />
+        <receiver android:name=".util.InternetBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -57,11 +57,8 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD7IV22e9iYSyBu-SSGDYqZzKBS0AUpjiQ" />
-
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
     </application>
-
-
 </manifest>

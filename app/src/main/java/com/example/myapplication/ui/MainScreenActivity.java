@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -29,7 +28,6 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,6 +54,7 @@ import com.example.myapplication.Model.Plaza;
 import com.example.myapplication.PlacesAutoCompleteAdapte;
 import com.example.myapplication.R;
 import com.example.myapplication.RecyclerTouchListener;
+import com.example.myapplication.util.InternetBroadcastReceiver;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -110,12 +109,11 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
 
-
     //widgets
     private DrawerLayout drawer;
     private MaterialSearchBar searchBar;
     View mapView;
-    Button clear;
+    public TextView intenetError;
 
     //vars
     private Boolean mLocationPermissionsGranted = false;
@@ -131,6 +129,9 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     private PlacesAutoCompleteAdapte pAdapter;
     RelativeLayout layout;
     public static  int count=0;
+    NetworkInfo netInfo;
+    InternetBroadcastReceiver internetBroadcastReceiver;
+    ConnectivityManager conMgr;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -144,6 +145,13 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
 
         searchBar =findViewById(R.id.searchBar);
         recyclerView = findViewById(R.id.recycler_view);
+        intenetError=findViewById(R.id.internet_tv);
+
+        conMgr =  (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        netInfo = conMgr.getActiveNetworkInfo();
+        if(netInfo!=null)
+            intenetError.setVisibility(View.INVISIBLE);
+
 
         firebaseDatabase = FirebaseDatabase.getInstance().getReference().child("plaza");
         getLocationPermission();
@@ -153,14 +161,12 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
-
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         pAdapter = new PlacesAutoCompleteAdapte(locationList);
-
         searchBar.addTextChangeListener(new TextWatcher() {
             Timer timer = new Timer();
             int DELAY = 1000;
@@ -168,24 +174,13 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             }
-
             @Override
             public void onTextChanged(CharSequence query, int i, int i1, int i2) {
-                Log.d("LOG_TAG", getClass().getSimpleName() + " text changed " + query);
-                ConnectivityManager conMgr =  (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-                NetworkInfo netInfo = conMgr.getActiveNetworkInfo();
-                if (netInfo == null){
-                   if(count==0) {
-                       Toast toast = Toast.makeText(getApplicationContext(), "Device is not connected to internet", Toast.LENGTH_SHORT);
-                       toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0);
-                       View view = toast.getView();
-                       view.setBackgroundResource(R.color.colorRed);
-                       TextView text = (TextView) view.findViewById(android.R.id.message);
-                       text.setTextColor(Color.parseColor("#000000"));
-                       toast.show();
-                       count++;
-                   }
-                }else{
+                if(query.length()==0 && recyclerView.getAdapter()!=null)
+                    recyclerView.setAlpha(0);
+                conMgr =  (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+                netInfo = conMgr.getActiveNetworkInfo();
+                if(netInfo!=null){
                     timer.cancel();
                     chterm = query.toString();
                     if(query.length() >= 2) {
@@ -202,9 +197,15 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
 
             @Override
             public void afterTextChanged(Editable editable) {
-                }
-
+            }
         });
+        internetBroadcastReceiver=new InternetBroadcastReceiver();
+        registerNetworkBroadcast();
+
+    }
+
+    public static MainScreenActivity getInstance() {
+        return new MainScreenActivity();
     }
 
     @Override
@@ -317,6 +318,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
 
     private void geoLocate(String searchString) {
         Log.d(TAG, "geoLocate: geolocating");
+
 
         Geocoder geocoder = new Geocoder(MainScreenActivity.this);
         List<Address> list = new ArrayList<>();
@@ -528,7 +530,6 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
 
     public boolean isMapsEnabled() {
         final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             buildAlertMessageNoGps();
             return false;
@@ -568,6 +569,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unregisterNetworkBroadcast();
     }
 
     @Override
@@ -676,13 +678,25 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
 
         }
     };
+    private void registerNetworkBroadcast() {
+        registerReceiver(internetBroadcastReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
+    }
+
+    protected void unregisterNetworkBroadcast() {
+        unregisterReceiver(internetBroadcastReceiver);
+    }
+
+    public void getNetInfo(){
+        ConnectivityManager conMgr =  (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        netInfo = conMgr.getActiveNetworkInfo();
+    }
 
     @Override
     protected void onStart() {
         super.onStart();
         registerReceiver(gpsLocationReceiver, new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION));
-    }
 
+    }
     @Override
     protected void onStop() {
         super.onStop();
