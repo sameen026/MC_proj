@@ -132,6 +132,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     NetworkInfo netInfo;
     InternetBroadcastReceiver internetBroadcastReceiver;
     ConnectivityManager conMgr;
+    GetServerData getServerData;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -167,6 +168,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         pAdapter = new PlacesAutoCompleteAdapte(locationList);
+        getServerData=new GetServerData();
         searchBar.addTextChangeListener(new TextWatcher() {
             Timer timer = new Timer();
             int DELAY = 1000;
@@ -176,14 +178,21 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
             }
             @Override
             public void onTextChanged(CharSequence query, int i, int i1, int i2) {
-                if(query.length()==0 && recyclerView.getAdapter()!=null)
-                    recyclerView.setAlpha(0);
+                if(getServerData!=null)
+                    getServerData.cancel(true);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.length()==0 && recyclerView.getAdapter()!=null)
+                    recyclerView.setVisibility(View.GONE);
                 conMgr =  (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
                 netInfo = conMgr.getActiveNetworkInfo();
                 if(netInfo!=null){
                     timer.cancel();
-                    chterm = query.toString();
-                    if(query.length() >= 2) {
+                    chterm = editable.toString();
+                    if(editable.length() >= 2) {
+
                         timer = new Timer();
                         timer.schedule(new TimerTask() {
                             @Override
@@ -193,10 +202,6 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                         }, DELAY);
                     }
                 }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
             }
         });
         internetBroadcastReceiver=new InternetBroadcastReceiver();
@@ -576,9 +581,10 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
-            recyclerView.setAlpha(0);
-            super.onBackPressed();
+        }
+        else{
+        recyclerView.setVisibility(View.GONE);
+        super.onBackPressed();
         }
     }
 
@@ -586,7 +592,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         Log.d(null, "In on Key Down");
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-           recyclerView.setAlpha(0);
+           recyclerView.setVisibility(View.GONE);
             return false;
         }
         return super.onKeyDown(keyCode, event);
@@ -635,7 +641,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
                 drawer.openDrawer(Gravity.LEFT);
                 break;
             case MaterialSearchBar.BUTTON_BACK:
-                recyclerView.setAlpha(0);
+                recyclerView.setVisibility(View.GONE);
                 searchBar.disableSearch();
                 break;
         }
@@ -762,10 +768,11 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
             super.onPostExecute(locationList);
             pAdapter = new PlacesAutoCompleteAdapte(locationList);
             recyclerView.setAdapter(pAdapter);
+            recyclerView.setVisibility(View.VISIBLE);
             recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
                 @Override
                 public void onClick(View view, int position) {
-                    recyclerView.setAlpha(0);
+                    recyclerView.setVisibility(View.GONE);
                     hideSoftKeyboard(getApplicationContext(), mapView);
                     searchBar.setText(locationList.get(position));
                     geoLocate(locationList.get(position));
