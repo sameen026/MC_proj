@@ -579,12 +579,14 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
 
     @Override
     public void onBackPressed() {
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         }
         else{
         recyclerView.setVisibility(View.GONE);
         super.onBackPressed();
+
         }
     }
 
@@ -593,6 +595,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         Log.d(null, "In on Key Down");
         if (keyCode == KeyEvent.KEYCODE_BACK) {
            recyclerView.setVisibility(View.GONE);
+           super.onBackPressed();
             return false;
         }
         return super.onKeyDown(keyCode, event);

@@ -2,6 +2,7 @@ package com.example.myapplication.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,10 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.myapplication.R;
 import com.example.myapplication.ui.AboutUsActivity;
 import com.example.myapplication.ui.PrivacyPolicyActivity;
-import com.example.myapplication.R;
-import com.example.myapplication.ui.ResetPasswordActivity;
 
 public class SettingFragment extends Fragment implements View.OnClickListener {
     @Nullable
@@ -51,5 +51,20 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
         else if (view.getId() == R.id.back_btn) {
             getActivity().onBackPressed();
         }
+    }
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if( keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                    getFragmentManager().popBackStack(null, getFragmentManager().POP_BACK_STACK_INCLUSIVE);
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 }
