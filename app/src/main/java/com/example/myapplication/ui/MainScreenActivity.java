@@ -25,6 +25,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -46,6 +47,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.myapplication.Fragment.HomeFragment;
 import com.example.myapplication.Fragment.SavedPlazaFragment;
 import com.example.myapplication.Fragment.SettingFragment;
@@ -99,6 +101,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 import static com.example.myapplication.util.Constants.PERMISSIONS_REQUEST_ENABLE_GPS;
 
 
@@ -109,6 +113,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
 
+    CircleImageView profilePic;
     //widgets
     private DrawerLayout drawer;
     private MaterialSearchBar searchBar;
@@ -140,6 +145,8 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         setContentView(R.layout.activity_main_screen);
 
         drawer = findViewById(R.id.drawer_layout);
+
+
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         layout = findViewById(R.id.r_layout);

@@ -297,7 +297,10 @@ public class SigninActivity extends AppCompatActivity implements View.OnClickLis
         } else if (pass.length() > 25) {
             password.setError("Password can't exceed 25 characters.");
             return false;
-        } else {
+        } else if (pass.length() < 8) {
+            password.setError("Password must be at least 8 character long.");
+            return false;
+        }else{
             //Need to validate the password here
             password.setError(null);
             return true;

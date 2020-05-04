@@ -20,7 +20,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ui.EnterEmail"></activity>
-        <activity android:name=".ui.SigninActivity"></activity>
+        <activity android:name=".ui.SigninActivity"
+            android:windowSoftInputMode="adjustResize"  ></activity>
         <activity android:name=".ui.MainScreenActivity" android:windowSoftInputMode="stateVisible|adjustResize"></activity>
         <activity android:name=".ui.SignupActivity"></activity>
         <activity
@@ -35,7 +36,7 @@
         <activity android:name=".ui.firstStartActivity"></activity>
         <activity android:name=".ui.EnterCodeActivity" />
         <activity android:name=".ui.ChangePasswordActivity" />
-        <activity android:name=".ui.ViewCommentsActivity" android:theme="@style/AppTheme.feedbackTheme" />
+        <activity android:name=".ui.ViewCommentsActivity"/>
         <activity android:name=".ui.PopupEmailActivity" android:theme="@style/AppTheme.CustomTheme" />
         <activity android:name=".ui.PopupNameActivity" android:theme="@style/AppTheme.CustomTheme" />
         <activity android:name=".ui.AboutUsActivity" />

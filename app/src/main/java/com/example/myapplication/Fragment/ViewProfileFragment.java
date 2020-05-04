@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,6 +49,7 @@ public class ViewProfileFragment extends Fragment implements View.OnClickListene
     CircleImageView profileImageView;
     Uri imageURI;
     ProgressBar mProgressBar;
+    public Button backBtn;
 
     StorageReference mStorageRef;
     DatabaseReference mDatabaseRef;
@@ -61,6 +63,8 @@ public class ViewProfileFragment extends Fragment implements View.OnClickListene
        email = v.findViewById(R.id.tv4_view_profile_rl);
        profileImageView = v.findViewById(R.id.profile_image);
        mProgressBar = v.findViewById(R.id.progressBar);
+        backBtn = v.findViewById(R.id.back_btn);
+        backBtn.setOnClickListener(this);
 
        profileImageView.setOnClickListener(this);
        currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -86,6 +90,8 @@ public class ViewProfileFragment extends Fragment implements View.OnClickListene
     public void onClick(View v) {
         if(v.getId() == R.id.profile_image){
             openFileChooser();
+        }else if (v.getId() == R.id.back_btn) {
+            getActivity().onBackPressed();
         }
     }
     private void openFileChooser(){

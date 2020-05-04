@@ -3,14 +3,20 @@ package com.example.myapplication.ui;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.R;
+import com.example.myapplication.util.InternetBroadcastReceiver;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
@@ -20,13 +26,28 @@ import com.google.firebase.auth.FirebaseAuth;
 public class EnterEmail extends AppCompatActivity implements View.OnClickListener {
     TextInputLayout emailEt;
     Button sendBtn;
+    Button backBtn;
+    public TextView intenetError;
+    NetworkInfo netInfo;
+    InternetBroadcastReceiver internetBroadcastReceiver;
+    ConnectivityManager conMgr;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enter_email);
+        backBtn = findViewById(R.id.back_btn);
+        backBtn.setOnClickListener(this);
         setTitle("Reset Password");
         init();
         setClickListeners();
+        intenetError=findViewById(R.id.internet_tv);
+        conMgr =  (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        netInfo = conMgr.getActiveNetworkInfo();
+        if(netInfo!=null)
+            intenetError.setVisibility(View.INVISIBLE);
+        internetBroadcastReceiver=new InternetBroadcastReceiver();
+        registerNetworkBroadcast();
+
     }
 
     private void init(){
@@ -36,7 +57,16 @@ public class EnterEmail extends AppCompatActivity implements View.OnClickListene
     private void setClickListeners(){
         sendBtn.setOnClickListener(this);
     }
-
+    public void getNetInfo(){
+        ConnectivityManager conMgr =  (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        netInfo = conMgr.getActiveNetworkInfo();
+    }
+    private void registerNetworkBroadcast() {
+        registerReceiver(internetBroadcastReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
+    }
+    protected void unregisterNetworkBroadcast() {
+        unregisterReceiver(internetBroadcastReceiver);
+    }
     @Override
     public void onClick(View v) {
         int id = v.getId();
@@ -47,6 +77,9 @@ public class EnterEmail extends AppCompatActivity implements View.OnClickListene
                     sendEmail();
                 }
                 break;
+            case R.id.back_btn:
+                this.onBackPressed();
+                break;
         }
     }
 
@@ -56,7 +89,7 @@ public class EnterEmail extends AppCompatActivity implements View.OnClickListene
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(getApplicationContext(), "Email sent.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "Email Sent", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(EnterEmail.this, SigninActivity.class));
                             //Remove Loading bar
                             finish();

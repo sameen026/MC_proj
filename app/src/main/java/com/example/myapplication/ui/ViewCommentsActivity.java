@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,6 +34,7 @@ public class ViewCommentsActivity extends AppCompatActivity implements View.OnCl
     private RecyclerView recyclerView;
     private FeedbackAdapter fAdapter;
     DatabaseReference myDB;
+    public Button backBtn;
     Intent i;
     Plaza p;
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +42,9 @@ public class ViewCommentsActivity extends AppCompatActivity implements View.OnCl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_comments);
 //        setTitle("Comments");
-        getSupportActionBar().setTitle(Html.fromHtml("<font color='#ffffff'>Comments</font>",1));
+//        getSupportActionBar().setTitle(Html.fromHtml("<font color='#ffffff'>Comments</font>",1));
+        backBtn = findViewById(R.id.back_btn);
+        backBtn.setOnClickListener(this);
 
         i = getIntent();
         p = (Plaza)i.getSerializableExtra("plaza");
@@ -90,6 +94,8 @@ public class ViewCommentsActivity extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onClick(View v) {
-
+        if (v.getId() == R.id.back_btn) {
+            this.onBackPressed();
+        }
     }
 }
