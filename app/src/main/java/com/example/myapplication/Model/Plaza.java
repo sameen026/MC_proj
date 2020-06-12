@@ -15,10 +15,36 @@ public class Plaza  implements Serializable {
     String carPolicyType;
     String bikePolicyType;
     String status;
+    String requestStatus;
+    boolean isApprovedByAdmin;
     double plazaLatitude;
     double plazaLongitude;
     String userId;
     String area;
+
+    public Plaza(){
+
+    }
+
+    public Plaza(String plazaID, String plazaName, int bikeAvailableSlots, int carAvailableSlots, int bikeTotalSlots, int carTotalSlots, int carFee, int bikeFee, String carPolicyType, String bikePolicyType, String status, String requestStatus, boolean isApprovedByAdmin, double plazaLatitude, double plazaLongitude, String userId, String area) {
+        this.plazaID = plazaID;
+        this.plazaName = plazaName;
+        this.bikeAvailableSlots = bikeAvailableSlots;
+        this.carAvailableSlots = carAvailableSlots;
+        this.bikeTotalSlots = bikeTotalSlots;
+        this.carTotalSlots = carTotalSlots;
+        this.carFee = carFee;
+        this.bikeFee = bikeFee;
+        this.carPolicyType = carPolicyType;
+        this.bikePolicyType = bikePolicyType;
+        this.status = status;
+        this.requestStatus = requestStatus;
+        this.isApprovedByAdmin = isApprovedByAdmin;
+        this.plazaLatitude = plazaLatitude;
+        this.plazaLongitude = plazaLongitude;
+        this.userId = userId;
+        this.area = area;
+    }
 
     public String getPlazaID() {
         return plazaID;
@@ -28,12 +54,12 @@ public class Plaza  implements Serializable {
         this.plazaID = plazaID;
     }
 
-    public String getArea() {
-        return area;
+    public String getPlazaName() {
+        return plazaName;
     }
 
-    public void setArea(String area) {
-        this.area = area;
+    public void setPlazaName(String plazaName) {
+        this.plazaName = plazaName;
     }
 
     public int getBikeAvailableSlots() {
@@ -68,55 +94,11 @@ public class Plaza  implements Serializable {
         this.carTotalSlots = carTotalSlots;
     }
 
-    public Plaza(String plazaID, String plazaName, int bikeAvailableSlots, int carAvailableSlots, int bikeTotalSlots, int carTotalSlots, double carFee, double bikeFee, String carPolicyType, String bikePolicyType, String status, double plazaLatitude, double plazaLongitude, String userId, String area) {
-        this.plazaID = plazaID;
-        this.plazaName = plazaName;
-        this.bikeAvailableSlots = bikeAvailableSlots;
-        this.carAvailableSlots = carAvailableSlots;
-        this.bikeTotalSlots = bikeTotalSlots;
-        this.carTotalSlots = carTotalSlots;
-        this.carFee = carFee;
-        this.bikeFee = bikeFee;
-        this.carPolicyType = carPolicyType;
-        this.bikePolicyType = bikePolicyType;
-        this.status = status;
-        this.plazaLatitude = plazaLatitude;
-        this.plazaLongitude = plazaLongitude;
-        this.userId = userId;
-        this.area = area;
-    }
-
-    public Plaza() {
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-
-
-
-    public String getPlazaName() {
-        return plazaName;
-    }
-
-    public void setPlazaName(String plazaName) {
-        this.plazaName = plazaName;
-    }
-
-
-
     public double getCarFee() {
         return carFee;
     }
 
-    public void setCarFee(double carFee) {
+    public void setCarFee(int carFee) {
         this.carFee = carFee;
     }
 
@@ -124,7 +106,7 @@ public class Plaza  implements Serializable {
         return bikeFee;
     }
 
-    public void setBikeFee(double bikeFee) {
+    public void setBikeFee(int bikeFee) {
         this.bikeFee = bikeFee;
     }
 
@@ -152,6 +134,22 @@ public class Plaza  implements Serializable {
         this.status = status;
     }
 
+    public String getRequestStatus() {
+        return requestStatus;
+    }
+
+    public void setRequestStatus(String requestStatus) {
+        this.requestStatus = requestStatus;
+    }
+
+    public boolean isApprovedByAdmin() {
+        return isApprovedByAdmin;
+    }
+
+    public void setApprovedByAdmin(boolean approvedByAdmin) {
+        isApprovedByAdmin = approvedByAdmin;
+    }
+
     public double getPlazaLatitude() {
         return plazaLatitude;
     }
@@ -167,4 +165,22 @@ public class Plaza  implements Serializable {
     public void setPlazaLongitude(double plazaLongitude) {
         this.plazaLongitude = plazaLongitude;
     }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+
 }
