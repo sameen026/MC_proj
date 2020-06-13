@@ -21,7 +21,6 @@ public class Plaza  implements Serializable {
     double plazaLongitude;
     String userId;
     String area;
-
     public Plaza(){
 
     }

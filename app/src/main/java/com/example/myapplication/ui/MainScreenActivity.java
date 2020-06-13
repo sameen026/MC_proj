@@ -235,7 +235,6 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         }
 
     }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.d(TAG, "onMapReady: map is ready");
