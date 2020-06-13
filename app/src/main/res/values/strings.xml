@@ -13,6 +13,7 @@
     <string name="menu_tools">Tools</string>
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
+    <string name="leave_feedback">Leave Feedback</string>
 
 
     <string name="menu_home">Park @ Ease</string>
@@ -45,4 +46,6 @@
         location of the closest parking plaza with available slots in real time.
 
     </string>
+    <string name="signup_now">Signup Now</string>
+    <string name="username">UserName</string>
 </resources>

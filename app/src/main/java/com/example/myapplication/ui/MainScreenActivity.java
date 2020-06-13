@@ -25,10 +25,10 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -113,7 +113,6 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private static final float DEFAULT_ZOOM = 15f;
 
-    CircleImageView profilePic;
     //widgets
     private DrawerLayout drawer;
     private MaterialSearchBar searchBar;
@@ -145,11 +144,17 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         setContentView(R.layout.activity_main_screen);
 
         drawer = findViewById(R.id.drawer_layout);
-
-
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        layout = findViewById(R.id.r_layout);
+
+        View view=navigationView.inflateHeaderView(R.layout.nav_header_main);
+        CircleImageView imageView= view.findViewById(R.id.profile_image);
+        if(FirebaseAuth.getInstance().getCurrentUser()!= null &&
+                FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl()!= null) {
+            Glide.with(this).load(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl())
+                    .into(imageView);
+        }
+        imageView.setVisibility(View.VISIBLE);
 
         searchBar =findViewById(R.id.searchBar);
         recyclerView = findViewById(R.id.recycler_view);
@@ -159,7 +164,6 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         netInfo = conMgr.getActiveNetworkInfo();
         if(netInfo!=null)
             intenetError.setVisibility(View.INVISIBLE);
-
 
         firebaseDatabase = FirebaseDatabase.getInstance().getReference().child("plaza");
         getLocationPermission();
@@ -470,8 +474,6 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     private void initMap() {
         Log.d(TAG, "initMap: initializing map");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-
-
         mapFragment.getMapAsync(MainScreenActivity.this);
 
 
@@ -601,7 +603,7 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
         Log.d(null, "In on Key Down");
         if (keyCode == KeyEvent.KEYCODE_BACK) {
            recyclerView.setVisibility(View.GONE);
-           super.onBackPressed();
+           super.onKeyDown(keyCode,event);
             return false;
         }
         return super.onKeyDown(keyCode, event);
@@ -682,7 +684,6 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
     @Override
     public void onLocationChanged(Location location) {
         initMap();
-
     }
 
     BroadcastReceiver gpsLocationReceiver = new BroadcastReceiver() {

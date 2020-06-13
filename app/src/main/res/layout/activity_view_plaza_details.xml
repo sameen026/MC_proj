@@ -30,23 +30,13 @@
             android:layout_marginTop="22dp"
             android:textStyle="bold"/>
         <Button
-            android:id="@+id/share_btn"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
-            android:layout_toRightOf="@id/title_tv"
-            android:layout_marginLeft="110dp"
-            android:background="@drawable/ic_share_black_24dp"
-            />
-        <Button
             android:id="@+id/save_btn"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginTop="15dp"
-            android:layout_toRightOf="@id/share_btn"
+            android:layout_toRightOf="@id/title_tv"
             android:layout_marginBottom="15dp"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="150dp"
             android:layout_marginRight="5dp"
             android:background="@drawable/ic_bookmark_black_24dp"
             />
@@ -190,7 +180,7 @@
         android:id="@+id/give_feedback_btn"
         android:layout_width="170dp"
         android:layout_height="wrap_content"
-        android:text="Leave Feedback"
+        android:text="@string/leave_feedback"
         android:layout_below="@id/slot_car_tv"
         android:background="@drawable/custom_button"
         android:textColor="@color/white"

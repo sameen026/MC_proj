@@ -63,8 +63,8 @@ public class ViewProfileFragment extends Fragment implements View.OnClickListene
        email = v.findViewById(R.id.tv4_view_profile_rl);
        profileImageView = v.findViewById(R.id.profile_image);
        mProgressBar = v.findViewById(R.id.progressBar);
-        backBtn = v.findViewById(R.id.back_btn);
-        backBtn.setOnClickListener(this);
+       backBtn = v.findViewById(R.id.back_btn);
+       backBtn.setOnClickListener(this);
 
        profileImageView.setOnClickListener(this);
        currentUser = FirebaseAuth.getInstance().getCurrentUser();

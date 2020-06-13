@@ -33,7 +33,7 @@ import com.google.firebase.database.ValueEventListener;
 public class ViewSavedPlazaActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener {
     public GoogleMap googleMap;
     public MapFragment mapFragment;
-    public Button shareBtn, backBtn, feedbackBtn, deleteBtn;
+    public Button backBtn, feedbackBtn, deleteBtn;
     public TextView name, area, chargesCar, chargesBike, slotCar, slotBike;
     Intent i;
     Plaza p;
@@ -45,7 +45,6 @@ public class ViewSavedPlazaActivity extends AppCompatActivity implements OnMapRe
         setContentView(R.layout.activity_view_saved_plaza);
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        shareBtn=findViewById(R.id.share_btn);
         deleteBtn=findViewById(R.id.delete_btn);
         feedbackBtn=findViewById(R.id.give_feedback_btn);
         i = getIntent();
@@ -71,9 +70,8 @@ public class ViewSavedPlazaActivity extends AppCompatActivity implements OnMapRe
         slotBike.setText(p.getBikeAvailableSlots()+" slots available for bikes");
 
         backBtn=findViewById(R.id.back_btn);
-        shareBtn.setOnClickListener(this);
         deleteBtn.setOnClickListener(this);
-       backBtn.setOnClickListener(this);
+        backBtn.setOnClickListener(this);
         feedbackBtn.setOnClickListener(this);
 
     }
@@ -105,15 +103,7 @@ public class ViewSavedPlazaActivity extends AppCompatActivity implements OnMapRe
 
     @Override
     public void onClick(View view) {
-        if(view.getId()==R.id.share_btn) {
-            Intent sendIntent = new Intent();
-            sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, "abc");
-            sendIntent.setType("text/plain");
-            Intent.createChooser(sendIntent, "Share via");
-            startActivity(sendIntent);
-        }
-       else if(view.getId()==R.id.delete_btn) {
+       if(view.getId()==R.id.delete_btn) {
             AlertDialog diaBox = AskOption();
             diaBox.show();
         }

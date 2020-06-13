@@ -29,33 +29,23 @@
             android:textColor="@color/colorWhite"
             android:layout_marginTop="22dp"
             android:textStyle="bold"/>
-        <Button
-            android:id="@+id/share_btn"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
-            android:layout_toRightOf="@id/title_tv"
-            android:layout_marginLeft="110dp"
-            android:background="@drawable/ic_share_black_24dp"
-           />
+
         <Button
             android:id="@+id/delete_btn"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginTop="15dp"
-            android:layout_toRightOf="@id/share_btn"
+            android:layout_toRightOf="@id/title_tv"
             android:layout_marginBottom="15dp"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="150dp"
             android:layout_marginRight="5dp"
             android:background="@drawable/ic_delete_black_24dp"
             />
     </RelativeLayout>
     <fragment
     android:id="@+id/map"
-    android:layout_width="match_parent"
-        android:layout_marginTop="85dp"
-    android:layout_height="250dp"
+    android:layout_width="match_parent" android:layout_marginTop="85dp"
+    android:layout_height="200dp"
     class="com.google.android.gms.maps.MapFragment" />
     <TextView
         android:id="@+id/plaza_name_tv"
@@ -178,7 +168,7 @@
         android:id="@+id/give_feedback_btn"
         android:layout_width="170dp"
         android:layout_height="wrap_content"
-        android:text="Give Feedback"
+        android:text="@string/leave_feedback"
         android:layout_below="@id/slot_car_tv"
         android:background="@drawable/custom_button"
         android:textColor="@color/white"

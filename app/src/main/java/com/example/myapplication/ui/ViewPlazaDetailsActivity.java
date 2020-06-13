@@ -3,7 +3,6 @@ package com.example.myapplication.ui;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -38,7 +37,7 @@ import uz.jamshid.library.ExactRatingBar;
 public class ViewPlazaDetailsActivity extends AppCompatActivity implements OnMapReadyCallback, View.OnClickListener {
     public GoogleMap googleMap;
     public MapFragment mapFragment;
-    public Button shareBtn, saveBtn, feedbackBtn, backBtn;
+    public Button saveBtn, feedbackBtn, backBtn;
     public TextView name, area, chargesCar, chargesBike, slotCar, slotBike, viewComments, commentsCount;
     private Plaza p;
     private ExactRatingBar ratingStars;
@@ -53,7 +52,6 @@ public class ViewPlazaDetailsActivity extends AppCompatActivity implements OnMap
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         ratingStars = findViewById(R.id.rate);
         mapFragment.getMapAsync(this);
-        shareBtn=findViewById(R.id.share_btn);
         saveBtn=findViewById(R.id.save_btn);
         feedbackBtn=findViewById(R.id.give_feedback_btn);
         myDB = FirebaseDatabase.getInstance().getReference().child("savedPlaza");
@@ -77,7 +75,6 @@ public class ViewPlazaDetailsActivity extends AppCompatActivity implements OnMap
         slotBike=findViewById(R.id.slot_bike_tv);
         slotBike.setText(p.getBikeAvailableSlots()+" slots available for bikes");
         backBtn=findViewById(R.id.back_btn);
-        shareBtn.setOnClickListener(this);
         saveBtn.setOnClickListener(this);
         backBtn.setOnClickListener(this);
         feedbackBtn.setOnClickListener(this);
@@ -147,15 +144,7 @@ public class ViewPlazaDetailsActivity extends AppCompatActivity implements OnMap
 
     @Override
     public void onClick(View view) {
-        if(view.getId()==R.id.share_btn) {
-            Intent sendIntent = new Intent();
-            sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, "abc");
-            sendIntent.setType("text/plain");
-            Intent.createChooser(sendIntent, "Share via");
-            startActivity(sendIntent);
-        }
-        else if(view.getId()==R.id.save_btn) {
+        if(view.getId()==R.id.save_btn) {
             AlertDialog diaBox = AskOption();
             diaBox.show();
         }
