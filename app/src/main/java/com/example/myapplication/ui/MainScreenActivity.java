@@ -673,7 +673,6 @@ public class MainScreenActivity extends AppCompatActivity implements NavigationV
             public void onComplete(@NonNull Task<Void> task) {
                 // ...
                 Toast.makeText(getApplicationContext(), "Signout Successfully", Toast.LENGTH_LONG);
-
                 startActivity(new Intent(getApplicationContext(), SigninActivity.class));
 
             }

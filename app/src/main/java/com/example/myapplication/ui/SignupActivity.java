@@ -105,7 +105,7 @@ public class SignupActivity extends AppCompatActivity implements View.OnClickLis
                                             if (task.isSuccessful()) {
                                                 Toast.makeText(getApplicationContext(),"SignUp Successful", Toast.LENGTH_SHORT).show();
                                                 String id = myDB.push().getKey();
-                                                User usr = new User(id, user.getEmail(), user.getDisplayName(), "membership",user.getPhotoUrl().toString());
+                                                User usr = new User(id, user.getEmail(), user.getDisplayName(), "membership","");
                                                 myDB.child(id).setValue(usr);
                                                 startActivity(new Intent(SignupActivity.this, SigninActivity.class));
                                                 finish();

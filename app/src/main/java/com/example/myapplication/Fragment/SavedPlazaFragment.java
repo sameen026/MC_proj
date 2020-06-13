@@ -98,7 +98,7 @@ public class SavedPlazaFragment extends Fragment implements PlazaAdapter.MyViewH
                                 }else{
                                     if(plazaList.size() == 0){
                                         mProgressBar.setVisibility(View.GONE);
-                                        Toast.makeText(getActivity(),"There is no saved Plaza",Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getActivity(),"There is no more saved Plaza",Toast.LENGTH_SHORT).show();
                                     }
                                 }
                                 mProgressBar.setVisibility(View.GONE);
@@ -116,7 +116,7 @@ public class SavedPlazaFragment extends Fragment implements PlazaAdapter.MyViewH
                 }else{
                     if(plazaList.size() == 0){
                         mProgressBar.setVisibility(View.GONE);
-                        Toast.makeText(getActivity(),"No saved Plaza",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(),"No more saved Plaza",Toast.LENGTH_SHORT).show();
                     }
                 }
             }
